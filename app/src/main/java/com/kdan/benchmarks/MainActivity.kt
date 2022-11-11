@@ -45,5 +45,6 @@ class MainActivity : AppCompatActivity() {
             }
         }.attach()
         dialog.show(fragmentManager, dialog.tag)
+
     }
 }
