@@ -1,6 +1,7 @@
 package com.kdan.benchmarks.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,19 +9,20 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
 import com.kdan.benchmarks.viewmodel.MapsViewModel
 
-class MapsFragment : Fragment(), MapsInterface {
+class MapsFragment : Fragment() {
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
-    override val viewModel = MapsViewModel()
     private lateinit var recyclerView: RecyclerView
-    private val adapter = RecycleViewAdapter()
+    private lateinit var adapter: RecycleViewAdapter
+    private val viewModel: MapsViewModel by viewModels()
     private lateinit var button: Button
 
     override fun onCreateView(
@@ -28,13 +30,14 @@ class MapsFragment : Fragment(), MapsInterface {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+        adapter = RecycleViewAdapter()
         viewModel.setupItems()
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
-        viewModel.updateButton(setupButtonText())
-        viewModel.initialText = setInitialText()
+        viewModel.updateButtonText(setupButtonText())
+        setInitialText()
         button = binding.buttonStartStop
 
         setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
@@ -42,10 +45,14 @@ class MapsFragment : Fragment(), MapsInterface {
             viewModel.collectionSize = result
         }
 
-        binding.buttonStartStop.setOnClickListener { start() }
+        button.setOnClickListener {
+            // setElementsAmount()
+            viewModel.start()
+        }
 
         viewModel.items.observe(viewLifecycleOwner) { items ->
             adapter.submitList(items)
+            Log.d("SHOW", "submitList")
         }
 
         viewModel.currentButtonText.observe(viewLifecycleOwner) {
@@ -76,69 +83,40 @@ class MapsFragment : Fragment(), MapsInterface {
         if (savedElementsAmount != "null") viewModel.elementsAmount = savedElementsAmount.toInt()
     }
 
-    private fun start() {
-        //setElementsAmount()
-        viewModel.stop = !viewModel.stop
-        if (viewModel.stop) {
-            viewModel.changeAllBars(true)
-            viewModel.changeButtonName()
-            return
-        }
-
-        if (checkRange()) {
-            viewModel.changeButtonName(true)
-            viewModel.changeAllBars()
-            viewModel.calculation.startAll()
-        } else {
-            viewModel.stop = true
-            Toast.makeText(context, R.string.check_range_elements_amount, Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private fun setElementsAmount() {
         val input = binding.textInputElementsAmount.text.toString()
         if (input.isNotBlank()) viewModel.elementsAmount = input.toInt()
     }
 
-    private fun setInitialText(): MutableList<String> {
-            val list = MutableList(6) { "" }
-            for (index in 0..5) {
-                val text: String = when (index) {
-                    0 -> getString(R.string.adding_new_tree_map)
-                    1 -> getString(R.string.search_by_key_tree_map)
-                    2 -> getString(R.string.removing_tree_map)
-                    3 -> getString(R.string.adding_new_hash_map)
-                    4 -> getString(R.string.search_by_key_hash_map)
-                    5 -> getString(R.string.removing_hash_map)
-                    else -> "Android got lost LOL"
-                }
-                list[index] = text
-                viewModel.changeText(index, text)
+    private fun setInitialText() {
+        if (viewModel.items.value!!.first().initialText.isNotEmpty()) return
+        repeat (6) {
+            val text: String = when (it) {
+                0 -> getString(R.string.adding_new_tree_map)
+                1 -> getString(R.string.search_by_key_tree_map)
+                2 -> getString(R.string.removing_tree_map)
+                3 -> getString(R.string.adding_new_hash_map)
+                4 -> getString(R.string.search_by_key_hash_map)
+                5 -> getString(R.string.removing_hash_map)
+                else -> "Android got lost LOL"
             }
-        return list
+            viewModel.items.value?.get(it)?.changeText(text, setInitialText = true)
+        }
     }
 
-    private fun checkRange(): Boolean {
-        val correctRange = 1000000..10000000
-        if (viewModel.collectionSize in correctRange &&
-            viewModel.elementsAmount in correctRange &&
-            viewModel.elementsAmount <= viewModel.collectionSize) return true
-        return false
-    }
-
-    private fun setupButtonText(): MutableList<String> {
+    private fun setupButtonText(): String {
         val list = MutableList(3) { "" }
-        for (index in 0..2) {
-            val text: String = when (index) {
+        repeat(3) {
+            val text: String = when (it) {
                 0 -> getString(R.string.button_start)
                 1 -> getString(R.string.button_start)
                 2 -> getString(R.string.button_stop)
                 else -> "Android got lost LOL"
             }
-            list[index] = text
+            list[it] = text
         }
         viewModel.buttonText = list
-        return list
+        return list.first()
     }
 
 }

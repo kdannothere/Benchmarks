@@ -1,84 +1,88 @@
 package com.kdan.benchmarks.viewmodel
 
+
+import android.app.Activity
+import android.content.Context
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kdan.benchmarks.R
 import com.kdan.benchmarks.repository.MapsRepository
-import com.kdan.benchmarks.ui.MapsInterface
 
-class MapsViewModel : ViewModel(), MapsInterface {
+class MapsViewModel : ViewModel() {
 
-    private val _items = MutableLiveData<List<ItemData>>()
-    val items: LiveData<List<ItemData>>
-        get() = _items
-    // var countClicks = 0 // for stopping
-    var stop = true
-    var collectionSize = 1000000
+    val items = MutableLiveData<List<ItemData>>()
+    var collectionSize = 10000
     val tagCollectionSize = "collectionSize"
-    var elementsAmount = 1000000
+    var elementsAmount = 10000
     val tagElementsAmount = "elementsAmount"
-    var initialText = MutableList(6) { "0" }
     var buttonText = mutableListOf<String>()
-    val calculation = MapsRepository
-    private val _currentButtonText = MutableLiveData<List<String>>()
-    val currentButtonText:LiveData<List<String>> // indexes: 0 current, 1 start, 2 stop
+    val repository = MapsRepository()
+    private val _currentButtonText = MutableLiveData<String>()
+    val currentButtonText: LiveData<String> // indexes: 0 current, 1 start, 2 stop
         get() = _currentButtonText
 
-
-    // init { setupItems() }
-    init {
-        calculation.viewModel = this
-    }
-
     fun setupItems() {
+        if (items.value != null) return
         val itemDataList = mutableListOf<ItemData>()
 
-        for (count in 1..6) {
-            val data = ItemData(id = count, text = "", visibilityOfBar = View.GONE)
+        repeat (6) {
+            val data = ItemData(id = it)
             itemDataList.add(data)
         }
-        //Activity().runOnUiThread {
-        _items.value = itemDataList
-
+        items.value = itemDataList
     }
 
-    fun updateButton(newText: MutableList<String>) {
-    _currentButtonText.value = newText
-    }
-
-
-    fun changeText(index: Int, newText: String) {
-        _items.value?.get(index)?.text = newText
-    }
-
-    fun changeResult(index: Int, newResult: Int) {
-        _items.value?.get(index)?.result = newResult
-    }
-
-    fun changeBar(index: Int, stop: Boolean = false) {
-        if (stop) {
-            _items.value!![index].visibilityOfBar = View.GONE
+    fun start() {
+        // Log.d("SHOW", "text = " + items.value!!.last().text)
+        //setElementsAmount()
+        if (repository.stop) {
+            repository.changeAllBars(true)
+            changeButtonName()
+            Thread.sleep(100)
+            repository.stop = false
+            return
+        }
+        if (checkRange()) {
+            changeButtonName(true)
+            prepRep()
+            repository.changeAllBars()
+            repository.startAll()
+            changeButtonName()
         } else {
-            _items.value!![index].visibilityOfBar = View.VISIBLE
+            repository.stop = false
+            // Toast.makeText(Activity().applicationContext, R.string.check_range_elements_amount, Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun updateText(index: Int) {
-        val result = _items.value?.get(index)?.result
-        changeText(index, "${viewModel.initialText[index]} $result ms")
+    // prepare repository
+    private fun prepRep() {
+        repository.let {
+            it.collectionSize = collectionSize
+            it.elementsAmount = elementsAmount
+            it.items = items
+        }
+    }
+
+    fun updateButtonText(newText: String) {
+        _currentButtonText.postValue(newText)
     }
 
     fun changeButtonName(stop: Boolean = false) {
         // indexes: 0 current, 1 start, 2 stop
         if (stop) buttonText[0] = buttonText[2] else buttonText[0] = buttonText[1]
-        _currentButtonText.value = buttonText
+        updateButtonText(buttonText.first())
     }
 
-    fun changeAllBars(stop: Boolean = false) {
-        for (index in 0..5) {
-            changeBar(index, stop)
-        }
+    private fun checkRange(): Boolean {
+        val correctRange = 10000..10000000
+        if (collectionSize in correctRange &&
+            elementsAmount in correctRange &&
+            elementsAmount <= collectionSize) return true
+        return false
     }
 
 }

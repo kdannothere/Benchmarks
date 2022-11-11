@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         dialog = getInstanceDialog()
         viewPager = binding.viewPager
         viewPager.adapter = ViewPagerAdapter(this)
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, index ->
+        TabLayoutMediator(binding.tabLayout, viewPager) { tab, index ->
             tab.text = when (index) {
                 0 -> {
                     getString(R.string.tab_collections)

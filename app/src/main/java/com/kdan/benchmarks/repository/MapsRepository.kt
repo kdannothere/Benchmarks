@@ -1,68 +1,192 @@
 package com.kdan.benchmarks.repository
 
-import android.app.Activity
-import com.kdan.benchmarks.ui.MapsInterface
-import com.kdan.benchmarks.viewmodel.MapsViewModel
+import android.os.Looper
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
 
-object MapsRepository: MapsInterface {
-
-    private var fakeMap: MutableMap<Int, Byte>? = null
-    private val map get() = fakeMap!!
-    private var index = 0
-    override var viewModel = MapsViewModel()
-    private val elementsAmount get() = viewModel.elementsAmount
-    private val collectionSize get() = viewModel.collectionSize
-
-
-    // init { fakeMap = createMap(viewModel.collectionSize) }
+class MapsRepository {
+    var collectionSize: Int = 0
+    var elementsAmount: Int = 0
+    var items = MutableLiveData<List<ItemData>>()
+    private val maps = mutableMapOf<Int, Byte>()
+    var stop = false
 
     fun startAll() {
         Thread {
-            fakeMap = createMap()
-            while (index < 6) {
-                when (index) {
-                    0 -> addingTreeMap(index)
-                    1 -> searchingTreeMap(index)
-                    2 -> removingTreeMap(index)
-                    3 -> addingHashMap(index)
-                    4 -> searchingHashMap(index)
-                    5 -> removingHashMap(index)
+            Looper.prepare()
+            createMaps()
+            repeat (6) {
+                when (it) {
+                    0 -> addingTreeMap(it)
+                    1 -> searchingTreeMap(it)
+                    2 -> removingTreeMap(it)
+                    3 -> addingHashMap(it)
+                    4 -> searchingHashMap(it)
+                    5 -> removingHashMap(it)
                 }
-                ++index
             }
-            fakeMap = null
+            maps.clear()
         }.start()
     }
 
     private fun finishing(index: Int, sumOfTime: Int) {
-        Activity().runOnUiThread {
-            viewModel.changeBar(index, true)
-            viewModel.changeResult(index, newResult = sumOfTime / viewModel.elementsAmount)
-            viewModel.updateText(index)
-            if (index == 5) {
-                viewModel.stop = true
-                viewModel.changeButtonName()
-                this.index = 0
-            }
-        }
+        Log.d("SHOW", "Operation done: $index")
+        items.value!![index].changeBar(true)
+        items.value!![index].changeResult(newResult = sumOfTime / elementsAmount)
+        items.value!![index].updateText()
     }
 
-    private fun createMap(): MutableMap<Int, Byte> {
-        val map = mutableMapOf<Int, Byte>()
+    private fun stopping(index: Int) {
+        Log.d("SHOW", "Operation stopped: $index")
+        items.value!![index].changeBar(true)
+    }
+
+    private fun addingTreeMap(index: Int) {
+        val map: TreeMap<Int, Byte> = maps.toTreeMap()
+        var sumOfTime = 0
+        var newKey = map.size + 1
+        repeat(elementsAmount) {
+            if (stop) {
+                stopping(index)
+                return
+            }
+            val starting = System.currentTimeMillis()
+            map[newKey] = 0
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
+            ++newKey
+        }
+        map.clear()
+        finishing(index, sumOfTime)
+    }
+
+    private fun searchingTreeMap(index: Int) {
+        if (stop) {
+            stopping(index)
+            return
+        }
+        val map: TreeMap<Int, Byte> = maps.toTreeMap()
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (stop) {
+                stopping(index)
+                return
+            }
+            val starting = System.currentTimeMillis()
+            map.containsKey(0)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
+        }
+        map.clear()
+        finishing(index, sumOfTime)
+    }
+
+    private fun removingTreeMap(index: Int) {
+        if (stop) {
+            stopping(index)
+            return
+        }
+        val map: TreeMap<Int, Byte> = maps.toTreeMap()
+        var sumOfTime = 0
+        var key = 0
+        repeat(elementsAmount) {
+            if (stop) {
+                stopping(index)
+                return
+            }
+            val starting = System.currentTimeMillis()
+            map.remove(key)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
+            ++key
+        }
+        map.clear()
+        finishing(index, sumOfTime)
+    }
+
+    private fun addingHashMap(index: Int) {
+        if (stop) {
+            stopping(index)
+            return
+        }
+        val map: HashMap<Int, Byte> = maps.toHashMap()
+        var sumOfTime = 0
+        var newKey = map.size + 1
+        repeat(elementsAmount) {
+            if (stop) {
+                stopping(index)
+                return
+            }
+            val starting = System.currentTimeMillis()
+            map[newKey] = 0
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
+            ++newKey
+        }
+        map.clear()
+        finishing(index, sumOfTime)
+    }
+
+    private fun searchingHashMap(index: Int) {
+        if (stop) {
+            stopping(index)
+            return
+        }
+        val map: HashMap<Int, Byte> = maps.toHashMap()
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (stop) {
+                stopping(index)
+                return
+            }
+            val starting = System.currentTimeMillis()
+            map.containsKey(0)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
+        }
+        map.clear()
+        finishing(index, sumOfTime)
+    }
+
+    private fun removingHashMap(index: Int) {
+
+        if (stop) {
+            stopping(index)
+            return
+        }
+        val map: HashMap<Int, Byte> = maps.toHashMap()
+        var sumOfTime = 0
+        var key = 0
+        repeat(elementsAmount) {
+            if (stop) {
+                stopping(index)
+                return
+            }
+            val starting = System.currentTimeMillis()
+            map.remove(key)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
+            ++key
+        }
+        map.clear()
+        finishing(index, sumOfTime)
+    }
+
+    private fun createMaps() {
         var count = 0
         repeat(collectionSize) {
-            map[count] = 0
+            maps[count] = 0
             ++count
         }
-        return map
     }
 
     private fun MutableMap<Int, Byte>.toTreeMap(): TreeMap<Int, Byte> {
         val keys = this.keys
         val values = this.values.toMutableList()
         var count = 0
-        val treeMap = TreeMap<Int, Byte> ()
+        val treeMap = TreeMap<Int, Byte>()
         keys.forEach {
             treeMap[it] = values[count]
             ++count
@@ -74,7 +198,7 @@ object MapsRepository: MapsInterface {
         val keys = this.keys
         val values = this.values.toMutableList()
         var count = 0
-        val hashMap = HashMap<Int, Byte> ()
+        val hashMap = HashMap<Int, Byte>()
         keys.forEach {
             hashMap[it] = values[count]
             ++count
@@ -82,113 +206,10 @@ object MapsRepository: MapsInterface {
         return hashMap
     }
 
-    private fun addingTreeMap(index: Int) {
-        val map: TreeMap<Int, Byte> = map.toTreeMap()
-        var sumOfTime = 0
-        var newKey = map.size + 1
-        repeat(elementsAmount) {
-            if (viewModel.stop) return
-            val starting = System.currentTimeMillis()
-            map[newKey] = 0
-            val ending = System.currentTimeMillis()
-            sumOfTime += (ending - starting).toInt()
-            ++sumOfTime
-            ++newKey
+    fun changeAllBars(stop: Boolean = false) {
+        repeat(6) {
+            items.value?.get(it)?.changeBar(stop)
         }
-        map.clear()
-        finishing(index, sumOfTime)
-    }
-
-    private fun searchingTreeMap(index: Int) {
-        if (viewModel.stop) return
-        val map: TreeMap<Int, Byte> = map.toTreeMap()
-        var sumOfTime = 0
-        repeat(elementsAmount) {
-            if (viewModel.stop) return
-            val starting = System.currentTimeMillis()
-            map.containsKey(0)
-            val ending = System.currentTimeMillis()
-            sumOfTime += (ending - starting).toInt()
-            ++sumOfTime
-        }
-        map.clear()
-        finishing(index, sumOfTime)
-    }
-
-    private fun removingTreeMap(index: Int) {
-        if (viewModel.stop) return
-        val map: TreeMap<Int, Byte> = map.toTreeMap()
-        var sumOfTime = 0
-        var key = 0
-        repeat(elementsAmount) {
-            if (viewModel.stop) return
-            val starting = System.currentTimeMillis()
-            map.remove(key)
-            val ending = System.currentTimeMillis()
-            sumOfTime += (ending - starting).toInt()
-            ++sumOfTime
-            ++key
-        }
-        map.clear()
-        finishing(index, sumOfTime)
-    }
-
-    private fun addingHashMap(index: Int) {
-        if (viewModel.stop) return
-        val map: HashMap<Int, Byte> = map.toHashMap()
-        var sumOfTime = 0
-        var newKey = map.size + 1
-        repeat(elementsAmount) {
-            if (viewModel.stop) return
-            val starting = System.currentTimeMillis()
-            map[newKey] = 0
-            val ending = System.currentTimeMillis()
-            sumOfTime += (ending - starting).toInt()
-            ++sumOfTime
-            ++newKey
-        }
-        map.clear()
-        finishing(index, sumOfTime)
-    }
-
-    private fun searchingHashMap(index: Int) {
-        if (viewModel.stop) return
-        val map: HashMap<Int, Byte> = map.toHashMap()
-        var sumOfTime = 0
-        repeat(elementsAmount) {
-            if (viewModel.stop) return
-            val starting = System.currentTimeMillis()
-            map.containsKey(0)
-            val ending = System.currentTimeMillis()
-            sumOfTime += (ending - starting).toInt()
-            ++sumOfTime
-        }
-        map.clear()
-        finishing(index, sumOfTime)
-    }
-
-    private fun removingHashMap(index: Int) {
-        if (viewModel.stop) {
-            this.index = 0
-            return
-        }
-        val map: HashMap<Int, Byte> = map.toHashMap()
-        var sumOfTime = 0
-        var key = 0
-        repeat(elementsAmount) {
-            if (viewModel.stop) {
-                map.clear()
-                this.index = 0
-                return
-            }
-            val starting = System.currentTimeMillis()
-            map.remove(key)
-            val ending = System.currentTimeMillis()
-            sumOfTime += (ending - starting).toInt()
-            ++sumOfTime
-            ++key
-        }
-        finishing(index, sumOfTime)
     }
 
 }
