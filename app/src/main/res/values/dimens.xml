@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_side_30">30dp</dimen>
+    <dimen name="padding_top_30">30dp</dimen>
+    <dimen name="margin_bottom_40">40dp</dimen>
+    <dimen name="padding_top_20">20dp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="text_size_14">14sp</dimen>
+    <dimen name="margin_side_30">30dp</dimen>
+    <dimen name="button_height_60">60dp</dimen>
+    <dimen name="button_calculate_margin_top_30">30dp</dimen>
+</resources>

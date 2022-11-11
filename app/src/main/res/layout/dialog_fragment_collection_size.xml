@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:tag="CollectionSizeDialogFragment"
+    tools:context=".fragments.dialog_fragments.CollectionSizeDialogFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/text_view_collection_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/padding_side_30"
+            android:paddingTop="@dimen/padding_top_30"
+            android:paddingEnd="@dimen/padding_side_30"
+            android:text="@string/text_view_collection_size"
+            android:textSize="@dimen/text_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout_collection_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/text_input_collection_size"
+            android:paddingStart="@dimen/padding_side_30"
+            android:paddingTop="@dimen/padding_top_20"
+            android:paddingEnd="@dimen/padding_side_30"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_collection_size">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/text_input_collection_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:inputType="number"
+                android:textSize="@dimen/text_size_16" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_calculate"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_60"
+                android:layout_marginTop="@dimen/button_calculate_margin_top_30"
+                android:text="@string/button_text_calculate"
+                android:textAlignment="center"
+                android:textSize="@dimen/text_size_14"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_input_collection_size"
+
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
