@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Benchmarks</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="tab_collections">Collections</string>
     <string name="tab_maps">Maps</string>
     <string name="text_view_collection_size">Please enter collection size and number of elements to compare</string>
-    <string name="text_input_collection_size">Collection size</string>
+    <string name="text_input_collection_size_hint">Collection size</string>
     <string name="button_text_calculate">Calculate</string>
+    <string name="text_input_elements_amount_hint">Elements amount</string>
+    <string name="button_start">START</string>
+    <string name="button_stop">STOP</string>
+    <string name="text_test_1">Test 1</string>
 </resources>

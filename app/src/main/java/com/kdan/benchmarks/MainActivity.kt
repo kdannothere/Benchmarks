@@ -9,7 +9,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.kdan.benchmarks.adapters.ViewPagerAdapter
-import com.kdan.benchmarks.data.Data
 import com.kdan.benchmarks.databinding.ActivityMainBinding
 import com.kdan.benchmarks.fragments.dialog_fragments.CollectionSizeDialogFragment
 
@@ -47,4 +46,7 @@ class MainActivity : AppCompatActivity() {
         dialog.show(fragmentManager, dialog.tag)
 
     }
+
+
+
 }

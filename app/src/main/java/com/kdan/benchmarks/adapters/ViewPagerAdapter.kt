@@ -4,10 +4,8 @@ import android.content.res.Resources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.kdan.benchmarks.data.Data
 import com.kdan.benchmarks.fragments.Collections
 import com.kdan.benchmarks.fragments.Maps
-import com.kdan.benchmarks.fragments.dialog_fragments.CollectionSizeDialogFragment
 
 class ViewPagerAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {

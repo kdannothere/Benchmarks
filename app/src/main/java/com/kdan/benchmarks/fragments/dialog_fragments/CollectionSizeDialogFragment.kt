@@ -4,25 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import com.kdan.benchmarks.data.Data
+import androidx.fragment.app.setFragmentResult
 import com.kdan.benchmarks.databinding.DialogFragmentCollectionSizeBinding
 
 class CollectionSizeDialogFragment : DialogFragment() {
 
     private lateinit var binding: DialogFragmentCollectionSizeBinding
 
-    /*
-    companion object {
-        const val TAG = "CollectionSizeDialogFragment"
-    }
-     */
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         binding = DialogFragmentCollectionSizeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,23 +29,32 @@ class CollectionSizeDialogFragment : DialogFragment() {
     }
 
     private fun takeData() {
-        // CS - collection size
-        val currentCS = binding.textInputCollectionSize.text.toString().toInt()
-        Data.collectionSize = currentCS
-        Data.dialogOn = false
+        val input = binding.textInputCollectionSize.text.toString().toIntOrNull()
+        if (input !in correctRange || input == null) {
+            Toast.makeText(this.context, "Error. Try another number.", Toast.LENGTH_LONG).show()
+            return
+        }
+        setFragmentResult(COLLECTION_SIZE, bundleOf(COLLECTION_SIZE to input))
         this.dismiss()
     }
 
-}
-
-/*
-setFragmentResultListener("requestKey") { requestKey, bundle ->
-    val result = bundle.getInt("bundleKey")
-    if (result in ONE_MILLION..TEN_MILLIONS) {
-        Collections.collectionSize = result
-        super.dismissNow()
-    } else {
-        Toast.makeText(context, "text", Toast.LENGTH_LONG).show()
+    companion object {
+        const val COLLECTION_SIZE = "collectionSize"
+        val correctRange = 1000000..10000000
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.run {
+            putInt(COLLECTION_SIZE, binding.textInputCollectionSize.text.toString().toInt())
+        }
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        val collectionSize = savedInstanceState?.getInt("collectionSize").toString()
+        val currentText = binding.textInputCollectionSize.text.toString()
+        binding.textInputCollectionSize.text?.replace(0, currentText.length, collectionSize)
+    }
+
 }
-*/

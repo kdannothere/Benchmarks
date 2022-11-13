@@ -28,7 +28,7 @@
             android:id="@+id/text_input_layout_collection_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/text_input_collection_size"
+            android:hint="@string/text_input_collection_size_hint"
             android:paddingStart="@dimen/padding_side_30"
             android:paddingTop="@dimen/padding_top_20"
             android:paddingEnd="@dimen/padding_side_30"
