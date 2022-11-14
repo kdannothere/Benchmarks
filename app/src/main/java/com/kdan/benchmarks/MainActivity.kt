@@ -15,7 +15,6 @@ import com.kdan.benchmarks.fragments.dialog_fragments.CollectionSizeDialogFragme
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
     private lateinit var fragmentManager: FragmentManager
     private lateinit var dialog: DialogFragment
@@ -27,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         fragmentManager = this.supportFragmentManager
         dialog = CollectionSizeDialogFragment()
-        tabLayout = binding.tabLayout
         viewPager = binding.viewPager
         viewPager.adapter = ViewPagerAdapter(this)
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, index ->
@@ -47,6 +45,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
 
+    }
 
 }
