@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Benchmarks</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="tab_collections">Collections</string>
     <string name="tab_maps">Maps</string>
     <string name="text_view_collection_size">Please enter collection size and number of elements to compare</string>
@@ -10,4 +9,26 @@
     <string name="button_start">START</string>
     <string name="button_stop">STOP</string>
     <string name="text_test_1">Test 1</string>
+    <string name="floating_button_description">Opens dialog to enter a collection size</string>
+    <string name="adding_beginning_array_list">Adding in the beginning ArrayList</string>
+    <string name="adding_middle_array_list">Adding in the middle ArrayList</string>
+    <string name="adding_end_array_list">Adding in the end ArrayList</string>
+    <string name="removing_beginning_array_list">Removing in the beginning ArrayList</string>
+    <string name="removing_middle_array_list">Removing in the middle ArrayList</string>
+    <string name="removing_end_array_list">Removing in the end ArrayList</string>
+    <string name="search_by_value_array_list">Search by value ArrayList</string>
+    <string name="adding_beginning_linked_list">Adding in the beginning LinkedList</string>
+    <string name="adding_middle_linked_list">Adding in the middle LinkedList</string>
+    <string name="adding_end_linked_list">Adding in the end LinkedList</string>
+    <string name="removing_beginning_linked_list">Removing in the beginning LinkedList</string>
+    <string name="removing_middle_linked_list">Removing in the middle LinkedList</string>
+    <string name="removing_end_linked_list">Removing in the end LinkedList</string>
+    <string name="search_by_value_linked_list">Search by value LinkedList</string>
+    <string name="adding_beginning_copy_on_write_array_list">Adding in the beginning CopyOnWriteArrayList</string>
+    <string name="adding_middle_copy_on_write_array_list">Adding in the middle CopyOnWriteArrayList</string>
+    <string name="adding_end_copy_on_write_array_list">Adding in the end CopyOnWriteArrayList</string>
+    <string name="removing_beginning_copy_on_write_array_list">Removing in the beginning CopyOnWriteArrayList</string>
+    <string name="removing_middle_copy_on_write_array_list">Removing in the middle CopyOnWriteArrayList</string>
+    <string name="removing_end_copy_on_write_array_list">Removing in the end CopyOnWriteArrayList</string>
+    <string name="search_by_value_copy_on_write_array_list">Search by value CopyOnWriteArrayList</string>
 </resources>

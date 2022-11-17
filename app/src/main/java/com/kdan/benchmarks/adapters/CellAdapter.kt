@@ -4,20 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.R
 
-class CellAdapter :
+class CellAdapter(private val list: Array<String>) :
     RecyclerView.Adapter<CellAdapter.CellViewHolder>() {
 
-    private var list = setTextToCollection()
-
-
-    class CellViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val textView = view.findViewById<TextView>(R.id.cell_text)
-        val bar = view.findViewById<ProgressBar>(R.id.cell_bar)
+    class CellViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val textView = view.findViewById<TextView>(R.id.cell_text)!!
+        // val bar = view.findViewById<ProgressBar>(R.id.cell_bar)
     }
 
     override fun getItemCount(): Int {
@@ -41,13 +37,18 @@ class CellAdapter :
     companion object Accessibility : View.AccessibilityDelegate() {
         override fun onInitializeAccessibilityNodeInfo(
             host: View,
-            info: AccessibilityNodeInfo
+            info: AccessibilityNodeInfo,
         ) {
             super.onInitializeAccessibilityNodeInfo(host, info)
-            // With `null` as the second argument to [AccessibilityAction], the
-            // accessibility service announces "double tap to activate".
-            // If a custom string is provided,
-            // it announces "double tap to <custom string>".
+            /* I have no idea what the comment below means and what the code is for.
+             Maybe I will deal with it later:)
+             */
+
+            /* With `null` as the second argument to [AccessibilityAction], the
+            accessibility service announces "double tap to activate".
+            If a custom string is provided,
+            it announces "double tap to <custom string>".
+             */
             val customString = host.context?.getString(R.string.text_test_1)
             val customClick =
                 AccessibilityNodeInfo.AccessibilityAction(
@@ -57,14 +58,4 @@ class CellAdapter :
             info.addAction(customClick)
         }
     }
-
-    fun setTextToCollection(): MutableList<String> {
-        val list = mutableListOf<String>()
-        for (i in 0..20) {
-            list += "Test ${i + 1}"
-        }
-        return list
-    }
-
-
 }

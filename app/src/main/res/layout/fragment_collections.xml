@@ -4,23 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relative_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".fragments.Collections">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_elements_amount"
+        android:id="@+id/text_input_layout_elements_amount"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:hint="@string/text_input_elements_amount_hint"
         android:layout_marginTop="@dimen/margin_top_40"
+        android:hint="@string/text_input_elements_amount_hint"
         app:layout_constraintHeight_percent="0.08"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.65">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_input_elements_amount"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -28,32 +30,21 @@
         android:id="@+id/button_start_stop"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="@string/button_start"
         android:layout_marginVertical="@dimen/margin_vertical_36"
+        android:text="@string/button_start"
         app:layout_constraintHeight_percent="0.09"
-        app:layout_constraintStart_toEndOf="@id/text_input_elements_amount"
+        app:layout_constraintStart_toEndOf="@id/text_input_layout_elements_amount"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.35" />
-
-    <TextView
-        android:id="@+id/text_view_test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/text_input_elements_amount"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textSize="40sp"
-        android:hint="TEST"
-
-        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/text_view_test"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_elements_amount"
+        tools:listitem="@layout/item_view" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.kdan.benchmarks.fragments.dialog_fragments
+package com.kdan.benchmarks.fragments.dialogs
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,14 +12,15 @@ import com.kdan.benchmarks.databinding.DialogFragmentCollectionSizeBinding
 
 class CollectionSizeDialogFragment : DialogFragment() {
 
-    private lateinit var binding: DialogFragmentCollectionSizeBinding
+    private var _binding: DialogFragmentCollectionSizeBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = DialogFragmentCollectionSizeBinding.inflate(inflater, container, false)
+        _binding = DialogFragmentCollectionSizeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -52,9 +53,14 @@ class CollectionSizeDialogFragment : DialogFragment() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        val collectionSize = savedInstanceState?.getInt("collectionSize").toString()
+        val collectionSize = savedInstanceState?.getInt(COLLECTION_SIZE).toString()
         val currentText = binding.textInputCollectionSize.text.toString()
         binding.textInputCollectionSize.text?.replace(0, currentText.length, collectionSize)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }
