@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.R
 
-class CellAdapter(private val list: Array<String>) :
+class CellAdapter(private val text: Array<String>) :
     RecyclerView.Adapter<CellAdapter.CellViewHolder>() {
 
     class CellViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -30,7 +30,7 @@ class CellAdapter(private val list: Array<String>) :
     }
 
     override fun onBindViewHolder(holder: CellViewHolder, position: Int) {
-        val item = list[position]
+        val item = text[position]
         holder.textView.text = item
     }
 
