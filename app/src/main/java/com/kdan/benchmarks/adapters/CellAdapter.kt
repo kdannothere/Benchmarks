@@ -1,61 +1,45 @@
 package com.kdan.benchmarks.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.TextView
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.kdan.benchmarks.R
+import com.kdan.benchmarks.data.Data
 
-class CellAdapter(private val text: Array<String>) :
+class CellAdapter(var text: MutableList<String>) :
     RecyclerView.Adapter<CellAdapter.CellViewHolder>() {
 
-    class CellViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView = view.findViewById<TextView>(R.id.cell_text)!!
-        // val bar = view.findViewById<ProgressBar>(R.id.cell_bar)
+    inner class CellViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val textView: TextView = view.findViewById(R.id.cell_text)
+        val bar: CircularProgressIndicator = view.findViewById(R.id.cell_bar)
     }
 
     override fun getItemCount(): Int {
-        return 21
+        return text.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CellViewHolder {
-        val layout = LayoutInflater
-            .from(parent.context)
-            .inflate(R.layout.item_view, parent, false)
-        // Setup custom accessibility delegate to set the text read
-        layout.accessibilityDelegate = Accessibility
-        return CellViewHolder(layout)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CellAdapter.CellViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(
+            R.layout.item_view, parent, false
+        )
+        return CellViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: CellViewHolder, position: Int) {
-        val item = text[position]
-        holder.textView.text = item
-    }
-
-    companion object Accessibility : View.AccessibilityDelegate() {
-        override fun onInitializeAccessibilityNodeInfo(
-            host: View,
-            info: AccessibilityNodeInfo,
-        ) {
-            super.onInitializeAccessibilityNodeInfo(host, info)
-            /* I have no idea what the comment below means and what the code is for.
-             Maybe I will deal with it later:)
-             */
-
-            /* With `null` as the second argument to [AccessibilityAction], the
-            accessibility service announces "double tap to activate".
-            If a custom string is provided,
-            it announces "double tap to <custom string>".
-             */
-            val customString = host.context?.getString(R.string.text_test_1)
-            val customClick =
-                AccessibilityNodeInfo.AccessibilityAction(
-                    AccessibilityNodeInfo.ACTION_CLICK,
-                    customString
-                )
-            info.addAction(customClick)
+    override fun onBindViewHolder(holder: CellAdapter.CellViewHolder, position: Int) {
+        val textView = holder.textView
+        val bar = holder.bar
+        textView.text = text[position]
+        textView.doAfterTextChanged {
+            if (bar.visibility == View.GONE) {
+                bar.visibility = View.VISIBLE
+            } else {
+                bar.visibility = View.GONE
+            }
         }
     }
 }

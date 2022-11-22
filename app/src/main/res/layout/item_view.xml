@@ -5,23 +5,25 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/cell_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="Test"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/cell_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="@id/cell_text"
+        app:layout_constraintTop_toTopOf="@id/cell_text"
+        app:layout_constraintEnd_toEndOf="@id/cell_text"
+        app:layout_constraintBottom_toBottomOf="@id/cell_text"
+        android:visibility="gone"
         android:indeterminate="true"
 
 

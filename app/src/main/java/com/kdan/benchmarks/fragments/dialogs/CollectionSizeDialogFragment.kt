@@ -41,7 +41,7 @@ class CollectionSizeDialogFragment : DialogFragment() {
 
     companion object {
         const val COLLECTION_SIZE = "collectionSize"
-        val correctRange = 1000000..10000000
+        val correctRange = 1000..10000000
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -5,26 +5,32 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.R
 import com.kdan.benchmarks.adapters.CellAdapter
+import com.kdan.benchmarks.data.Data
 import com.kdan.benchmarks.databinding.FragmentCollectionsBinding
+import com.kdan.benchmarks.functions.DoCollections
+import kotlin.concurrent.thread
 
 class Collections : Fragment() {
 
     private var _binding: FragmentCollectionsBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
-    private lateinit var initialText: Array<String>
-    private lateinit var result: Array<Int>
-    private lateinit var text: Array<String>
+    private lateinit var cellAdapter: CellAdapter
+    private lateinit var button: Button
+    private lateinit var initialText: MutableList<String>
+    private lateinit var result: MutableList<Int>
+    private var position = 0
 
     companion object {
-        private var collectionSize = 0
+        private var collectionSize = 10000
         const val tagCollectionSize = "collectionSize"
-        private var elementsAmount = 0
+        private var elementsAmount = 5000
         const val tagElementsAmount = "elementsAmount"
     }
 
@@ -40,16 +46,20 @@ class Collections : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.recyclerView
+        recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         initialText = setInitialText()
         result = setInitialResult()
-        text = initialText
+        Data.text = initialText
+        Data.collectionSize = collectionSize
+        cellAdapter = CellAdapter(text = Data.text)
+        recyclerView.adapter = cellAdapter
+        button = binding.buttonStartStop
         updateText()
-        chooseLayout()
         setFragmentResultListener(tagCollectionSize) { _, bundle ->
             val result = bundle.getInt(tagCollectionSize)
             collectionSize = result
         }
-        binding.buttonStartStop.setOnClickListener { changeButtonName() }
+        binding.buttonStartStop.setOnClickListener { start() }
     }
 
     override fun onDestroyView() {
@@ -73,36 +83,47 @@ class Collections : Fragment() {
         if (savedCollectionSize != "null") elementsAmount = savedElementsAmount.toInt()
     }
 
-    private fun chooseLayout() {
-        recyclerView.layoutManager = GridLayoutManager(this.context, 3)
-        recyclerView.adapter = CellAdapter(text)
+    private fun start() {
+        changeButtonName()
+        cellAdapter.notifyDataSetChanged()
+        thread(name = "All operations") {
+            DoCollections(collectionSize, elementsAmount, context).startAll()
+            ++position
+        }
+        changeButtonName()
+        cellAdapter.notifyDataSetChanged()
     }
 
     private fun changeButtonName() {
-        if (binding.buttonStartStop.text.toString() == getString(R.string.button_start)) {
-            binding.buttonStartStop.text = getString(R.string.button_stop)
-        } else binding.buttonStartStop.text = getString(R.string.button_start)
+        if (button.text.toString() == getString(R.string.button_start)) {
+            button.text = getString(R.string.button_stop)
+            // getElementsAmount()
+        } else {
+            button.text = getString(R.string.button_start)
+        }
 
-        // elementsAmount = binding.textInputElementsAmount.text.toString().toInt()
-
-        // To test updating
-        for (i in 0..20) result[i] = i + 1
-        updateText()
-        chooseLayout()
+        // updateResult()
     }
 
     private fun updateText() {
         for (index in 0..20) {
-            val value = if (result[index] == 0) "N/A" else result[index]
-            text[index] = "${initialText[index]} $value ms"
+            Data.text[index] = "${initialText[index]} ${result[index]} ms"
         }
+        cellAdapter.notifyDataSetChanged()
     }
 
-    private fun setInitialResult(): Array<Int> {
-        return Array(21) { 0 }
+    private fun updateResult() {
+        for (index in 0..20) {
+            result[index] = result[index] + 1
+        }
+        updateText()
     }
 
-    private fun setInitialText(): Array<String> {
+    private fun setInitialResult(): MutableList<Int> {
+        return MutableList(21) { 0 }
+    }
+
+    private fun setInitialText(): MutableList<String> {
         val list = mutableListOf<String>()
         for (index in 0..20) {
             val str: String = when (index) {
@@ -131,7 +152,15 @@ class Collections : Fragment() {
             }
             list += str
         }
-        return list.toTypedArray()
+        return list
+    }
+
+    private fun getElementsAmount() {
+        //elementsAmount = binding.textInputElementsAmount.text.toString().toInt()
+    }
+
+    class Timer {
+        val timer = 0
     }
 
 }
