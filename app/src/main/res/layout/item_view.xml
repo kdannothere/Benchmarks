@@ -1,32 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/constraint"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/cell_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/cell_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/cell_text"
-        app:layout_constraintTop_toTopOf="@id/cell_text"
-        app:layout_constraintEnd_toEndOf="@id/cell_text"
-        app:layout_constraintBottom_toBottomOf="@id/cell_text"
-        android:visibility="gone"
-        android:indeterminate="true"
+        <variable
+            name="itemData"
+            type="com.kdan.benchmarks.data.ItemData" />
+    </data>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cell_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{itemData.text}"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/cell_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="@{itemData.visibilityOfBar}"
+            app:layout_constraintBottom_toBottomOf="@id/cell_text"
+            app:layout_constraintEnd_toEndOf="@id/cell_text"
+            app:layout_constraintStart_toStartOf="@id/cell_text"
+            app:layout_constraintTop_toTopOf="@id/cell_text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

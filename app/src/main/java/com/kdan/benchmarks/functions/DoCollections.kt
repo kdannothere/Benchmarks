@@ -1,226 +1,371 @@
 package com.kdan.benchmarks.functions
 
-import android.content.Context
+import android.util.Log
+import kotlinx.coroutines.Runnable
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
 
-class DoCollections (
+class DoCollections(
     collectionSize: Int,
     private val elementsAmount: Int,
-    val context: Context?
+    private val fragment: com.kdan.benchmarks.fragments.Collections,
 ) {
 
     private var _collection: List<Int>? = createList(collectionSize)
     private val collection get() = _collection!!
-    private var position = 0
+    private var index = 0
+
 
     init {
         _collection = createList(collectionSize)
     }
 
     fun startAll() {
-        while (position < 21) {
-            thread(name = "Thread $position") {
-                when (position) {
-                    0 -> addingBeginningArrayList()
-                    1 -> addingMiddleArrayList()
-                    2 -> addingEndArrayList()
-                    3 -> searchByValueArrayList()
-                    4 -> removingBeginningArrayList()
-                    5 -> removingMiddleArrayList()
-                    6 -> removingEndArrayList()
-                    7 -> addingBeginningLinkedList()
-                    8 -> addingMiddleLinkedList()
-                    9 -> addingEndLinkedList()
-                    10 -> searchByValueLinkedList()
-                    11 -> removingBeginningLinkedList()
-                    12 -> removingMiddleLinkedList()
-                    13 -> removingEndLinkedList()
-                    14 -> addingBeginningCopyOnWriteArrayList()
-                    15 -> addingMiddleCopyOnWriteArrayList()
-                    16 -> addingEndCopyOnWriteArrayList()
-                    17 -> searchByValueCopyOnWriteArrayList()
-                    18 -> removingBeginningCopyOnWriteArrayList()
-                    19 -> removingMiddleCopyOnWriteArrayList()
-                    20 -> removingEndCopyOnWriteArrayList()
+        Thread(Runnable {
+            while (index < 21) {
+                when (index) {
+                    0 -> addingBeginningArrayList(index)
+                    1 -> addingMiddleArrayList(index)
+                    2 -> addingEndArrayList(index)
+                    3 -> searchByValueArrayList(index)
+                    4 -> removingBeginningArrayList(index)
+                    5 -> removingMiddleArrayList(index)
+                    6 -> removingEndArrayList(index)
+                    7 -> addingBeginningLinkedList(index)
+                    8 -> addingMiddleLinkedList(index)
+                    9 -> addingEndLinkedList(index)
+                    10 -> searchByValueLinkedList(index)
+                    11 -> removingBeginningLinkedList(index)
+                    12 -> removingMiddleLinkedList(index)
+                    13 -> removingEndLinkedList(index)
+                    14 -> addingBeginningCopyOnWriteArrayList(index)
+                    15 -> addingMiddleCopyOnWriteArrayList(index)
+                    16 -> addingEndCopyOnWriteArrayList(index)
+                    17 -> searchByValueCopyOnWriteArrayList(index)
+                    18 -> removingBeginningCopyOnWriteArrayList(index)
+                    19 -> removingMiddleCopyOnWriteArrayList(index)
+                    20 -> removingEndCopyOnWriteArrayList(index)
                 }
+                ++index
             }
-            ++position
+            _collection = null
+        }).start()
+    }
+
+    private fun finishing(index: Int, sumOfTime: Int) {
+        fragment.activity?.runOnUiThread {
+            Log.d("SHOW", "$index")
+            fragment.viewModel.changeBar(index)
+            fragment.viewModel.changeResult(index, newResult = sumOfTime / elementsAmount)
+            fragment.updateText(index)
+            fragment.recyclerView.adapter?.notifyItemChanged(index)
+            if (index == 20) {
+                fragment.countClicks = 0
+                fragment.changeButtonName()
+            }
         }
-        _collection = null
     }
 
     private fun createList(collectionSize: Int): List<Int> {
         return List(collectionSize) { 0 }
     }
 
-    private fun addingBeginningArrayList() {
+    private fun addingBeginningArrayList(index: Int) {
         var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(0, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
+            ++sumOfTime
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun addingMiddleArrayList() {
+    private fun addingMiddleArrayList(index: Int) {
         var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(array!!.size / 2, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun addingEndArrayList() {
+    private fun addingEndArrayList(index: Int) {
         var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(array!!.lastIndex, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun searchByValueArrayList() {
+    private fun searchByValueArrayList(index: Int) {
         var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.binarySearch(0, 0, array!!.lastIndex)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingBeginningArrayList() {
+    private fun removingBeginningArrayList(index: Int) {
         var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.removeAt(0)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingMiddleArrayList() {
+    private fun removingMiddleArrayList(index: Int) {
         var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.removeAt(array!!.size / 2)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingEndArrayList() {
+    private fun removingEndArrayList(index: Int) {
         var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.removeAt(array!!.lastIndex)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun addingBeginningLinkedList() {
+    private fun addingBeginningLinkedList(index: Int) {
         var array: LinkedList<Int>? = collection.toCollection(LinkedList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(0, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun addingMiddleLinkedList() {
+    private fun addingMiddleLinkedList(index: Int) {
         var array: LinkedList<Int>? = collection.toCollection(LinkedList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(array!!.size / 2, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun addingEndLinkedList() {
+    private fun addingEndLinkedList(index: Int) {
         var array: LinkedList<Int>? = collection.toCollection(LinkedList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(array!!.lastIndex, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun searchByValueLinkedList() {
+    private fun searchByValueLinkedList(index: Int) {
         var array: LinkedList<Int>? = collection.toCollection(LinkedList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.binarySearch(0, 0, array!!.lastIndex)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingBeginningLinkedList() {
+    private fun removingBeginningLinkedList(index: Int) {
         var array: LinkedList<Int>? = collection.toCollection(LinkedList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.removeAt(0)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingMiddleLinkedList() {
+    private fun removingMiddleLinkedList(index: Int) {
         var array: LinkedList<Int>? = collection.toCollection(LinkedList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.removeAt(array!!.size / 2)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingEndLinkedList() {
+    private fun removingEndLinkedList(index: Int) {
         var array: LinkedList<Int>? = collection.toCollection(LinkedList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.removeAt(array!!.lastIndex)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun addingBeginningCopyOnWriteArrayList() {
+    private fun addingBeginningCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(0, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun addingMiddleCopyOnWriteArrayList() {
+    private fun addingMiddleCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(array!!.size / 2, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun addingEndCopyOnWriteArrayList() {
+    private fun addingEndCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.add(array!!.lastIndex, 1)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun searchByValueCopyOnWriteArrayList() {
+    private fun searchByValueCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.binarySearch(0, 0, array!!.lastIndex)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingBeginningCopyOnWriteArrayList() {
+    private fun removingBeginningCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.removeAt(0)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingMiddleCopyOnWriteArrayList() {
+    private fun removingMiddleCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) return
+            val starting = System.currentTimeMillis()
             array!!.removeAt(array!!.size / 2)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 
-    private fun removingEndCopyOnWriteArrayList() {
+    private fun removingEndCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
-        repeat (elementsAmount) {
+        var sumOfTime = 0
+        repeat(elementsAmount) {
+            if (fragment.stop) {
+                fragment.countClicks = 0
+                return
+            }
+            val starting = System.currentTimeMillis()
             array!!.removeAt(array!!.lastIndex)
+            val ending = System.currentTimeMillis()
+            sumOfTime += (ending - starting).toInt()
         }
+        finishing(index, sumOfTime)
         array = null
     }
 

@@ -2,13 +2,13 @@
     <string name="app_name">Benchmarks</string>
     <string name="tab_collections">Collections</string>
     <string name="tab_maps">Maps</string>
-    <string name="text_view_collection_size">Please enter collection size and number of elements to compare</string>
+    <string name="text_view_collection_size">Please enter collection size and number of elements to compare:</string>
     <string name="text_input_collection_size_hint">Collection size</string>
     <string name="button_text_calculate">Calculate</string>
     <string name="text_input_elements_amount_hint">Elements amount</string>
     <string name="button_start">START</string>
     <string name="button_stop">STOP</string>
-    <string name="text_test_1">Test 1</string>
+    <string name="check_range_elements_amount">The number should be at least 1 and at max be equal to collection size.</string>
     <string name="floating_button_description">Opens dialog to enter a collection size</string>
     <string name="adding_beginning_array_list">Adding in the beginning ArrayList</string>
     <string name="adding_middle_array_list">Adding in the middle ArrayList</string>

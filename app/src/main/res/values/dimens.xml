@@ -2,14 +2,10 @@
 <resources>
     <dimen name="padding_side_30">30dp</dimen>
     <dimen name="padding_top_30">30dp</dimen>
-    <dimen name="margin_bottom_40">40dp</dimen>
-    <dimen name="margin_top_40">40dp</dimen>
+    <dimen name="padding_top_50">50dp</dimen>
     <dimen name="padding_top_20">20dp</dimen>
     <dimen name="text_size_16">16sp</dimen>
     <dimen name="text_size_14">14sp</dimen>
-    <dimen name="margin_side_30">30dp</dimen>
     <dimen name="button_height_60">60dp</dimen>
     <dimen name="button_calculate_margin_top_30">30dp</dimen>
-    <dimen name="margin_end_150">150dp</dimen>
-    <dimen name="margin_vertical_36">36dp</dimen>
 </resources>
