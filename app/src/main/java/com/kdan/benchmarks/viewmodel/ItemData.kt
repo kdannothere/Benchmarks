@@ -1,4 +1,4 @@
-package com.kdan.benchmarks.data
+package com.kdan.benchmarks.viewmodel
 
 import android.view.View
 

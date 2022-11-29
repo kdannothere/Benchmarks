@@ -8,7 +8,7 @@
     <string name="text_input_elements_amount_hint">Elements amount</string>
     <string name="button_start">START</string>
     <string name="button_stop">STOP</string>
-    <string name="check_range_elements_amount">The number should be at least 1 and at max be equal to collection size.</string>
+    <string name="check_range_elements_amount">The number should be from 1 million to 10 millions.</string>
     <string name="floating_button_description">Opens dialog to enter a collection size</string>
     <string name="adding_beginning_array_list">Adding in the beginning ArrayList</string>
     <string name="adding_middle_array_list">Adding in the middle ArrayList</string>
@@ -31,4 +31,10 @@
     <string name="removing_middle_copy_on_write_array_list">Removing in the middle CopyOnWriteArrayList</string>
     <string name="removing_end_copy_on_write_array_list">Removing in the end CopyOnWriteArrayList</string>
     <string name="search_by_value_copy_on_write_array_list">Search by value CopyOnWriteArrayList</string>
+    <string name="adding_new_tree_map">Adding new in TreeMap</string>
+    <string name="search_by_key_tree_map">Search by key in TreeMap</string>
+    <string name="removing_tree_map">Adding new in TreeMap</string>
+    <string name="adding_new_hash_map">Adding new in HashMap</string>
+    <string name="search_by_key_hash_map">Search by key in HashMap</string>
+    <string name="removing_hash_map">Adding new in HashMap</string>
 </resources>

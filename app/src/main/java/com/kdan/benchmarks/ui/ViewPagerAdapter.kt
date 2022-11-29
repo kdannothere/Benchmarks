@@ -1,11 +1,9 @@
-package com.kdan.benchmarks.adapters
+package com.kdan.benchmarks.ui
 
 import android.content.res.Resources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.kdan.benchmarks.fragments.Collections
-import com.kdan.benchmarks.fragments.Maps
 
 class ViewPagerAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {
@@ -13,17 +11,9 @@ class ViewPagerAdapter(fragmentActivity: FragmentActivity) :
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> {
-                Collections()
-            }
-            1 -> {
-                Maps()
-            }
-            else -> {
-                throw Resources.NotFoundException("Position not found")
-            }
+            0 -> CollectionsFragment()
+            1 -> MapsFragment()
+            else -> throw Resources.NotFoundException("Position not found")
         }
     }
-
-
 }

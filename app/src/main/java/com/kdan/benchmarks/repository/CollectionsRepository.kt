@@ -1,15 +1,15 @@
-package com.kdan.benchmarks.functions
+package com.kdan.benchmarks.repository
 
-import android.util.Log
+import com.kdan.benchmarks.ui.CollectionsFragment
 import kotlinx.coroutines.Runnable
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.ArrayList
 
-class DoCollections(
+class CollectionsRepository(
     collectionSize: Int,
     private val elementsAmount: Int,
-    private val fragment: com.kdan.benchmarks.fragments.Collections,
+    private val fragment: CollectionsFragment,
 ) {
 
     private var _collection: List<Int>? = createList(collectionSize)
@@ -55,7 +55,6 @@ class DoCollections(
 
     private fun finishing(index: Int, sumOfTime: Int) {
         fragment.activity?.runOnUiThread {
-            Log.d("SHOW", "$index")
             fragment.viewModel.changeBar(index)
             fragment.viewModel.changeResult(index, newResult = sumOfTime / elementsAmount)
             fragment.updateText(index)

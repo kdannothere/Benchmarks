@@ -1,9 +1,9 @@
-package com.kdan.benchmarks.adapters
+package com.kdan.benchmarks.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import com.kdan.benchmarks.data.ItemData
+import com.kdan.benchmarks.viewmodel.ItemData
 import com.kdan.benchmarks.databinding.ItemViewBinding
 
 class RecycleViewAdapter

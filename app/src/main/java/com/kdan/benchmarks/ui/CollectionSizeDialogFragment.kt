@@ -1,4 +1,4 @@
-package com.kdan.benchmarks.fragments.dialogs
+package com.kdan.benchmarks.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -41,7 +41,7 @@ class CollectionSizeDialogFragment : DialogFragment() {
 
     companion object {
         const val COLLECTION_SIZE = "collectionSize"
-        val correctRange = 1000..10000000
+        val correctRange = 1000000..10000000
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

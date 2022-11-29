@@ -1,6 +1,7 @@
-package com.kdan.benchmarks.fragments
+package com.kdan.benchmarks.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,16 +13,15 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.R
-import com.kdan.benchmarks.adapters.RecycleViewAdapter
-import com.kdan.benchmarks.data.ViewModelCollections
+import com.kdan.benchmarks.viewmodel.CollectionsViewModel
 import com.kdan.benchmarks.databinding.FragmentCollectionsBinding
-import com.kdan.benchmarks.functions.DoCollections
+import com.kdan.benchmarks.repository.CollectionsRepository
 
-class Collections : Fragment() {
+class CollectionsFragment : Fragment() {
 
     private var _binding: FragmentCollectionsBinding? = null
     private val binding get() = _binding!!
-    val viewModel: ViewModelCollections by viewModels()
+    val viewModel: CollectionsViewModel by viewModels()
     lateinit var recyclerView: RecyclerView
     private lateinit var button: Button
     private lateinit var initialText: MutableList<String>
@@ -29,9 +29,9 @@ class Collections : Fragment() {
     val stop get() = countClicks % 2 == 0
 
     companion object {
-        private var collectionSize = 1000000
+        private var collectionSize = 0
         const val tagCollectionSize = "collectionSize"
-        private var elementsAmount = 1000000
+        private var elementsAmount = 0
         const val tagElementsAmount = "elementsAmount"
     }
 
@@ -85,6 +85,7 @@ class Collections : Fragment() {
 
     private fun start() {
         ++countClicks
+        setElementsAmount()
         // for stopping
         if (stop) {
             changeAllBars(true)
@@ -95,11 +96,11 @@ class Collections : Fragment() {
         if (checkRange(elementsAmount)) {
             changeButtonName()
             changeAllBars()
-            setElementsAmount()
             Thread {
-                DoCollections(collectionSize, elementsAmount, this).startAll()
+                CollectionsRepository(collectionSize, elementsAmount, this).startAll()
             }.start()
         } else {
+            Log.d("SHOW", "col size = $collectionSize, amount = $elementsAmount")
             Toast.makeText(context, R.string.check_range_elements_amount, Toast.LENGTH_SHORT).show()
         }
    }
@@ -120,8 +121,8 @@ class Collections : Fragment() {
    }
 
    private fun setInitialText(): MutableList<String> {
-       val list = MutableList(21) { "" }
-       for (index in 0..20) {
+       val list = MutableList(viewModel.items.value!!.size) { "" }
+       for (index in 0..viewModel.items.value!!.lastIndex) {
            val text: String = when (index) {
                0 -> getString(R.string.adding_beginning_array_list)
                1 -> getString(R.string.adding_middle_array_list)
@@ -158,14 +159,14 @@ class Collections : Fragment() {
    }
 
     private fun changeAllBars(stop: Boolean = false) {
-        for (index in 0..20) {
+        for (index in 0..viewModel.items.value!!.lastIndex) {
             viewModel.changeBar(index, stop)
             recyclerView.adapter?.notifyItemChanged(index)
         }
     }
 
     private fun checkRange(elementsAmount: Int): Boolean {
-        return elementsAmount in 1..collectionSize
+        return elementsAmount in 1000000..10000000
     }
 
    // need enum class State ?

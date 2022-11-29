@@ -1,4 +1,4 @@
-package com.kdan.benchmarks
+package com.kdan.benchmarks.ui
 
 import android.content.res.Resources
 import android.os.Bundle
@@ -6,9 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
-import com.kdan.benchmarks.adapters.ViewPagerAdapter
+import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.ActivityMainBinding
-import com.kdan.benchmarks.fragments.dialogs.CollectionSizeDialogFragment
 
 class MainActivity : AppCompatActivity() {
 
