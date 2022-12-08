@@ -11,15 +11,15 @@ class CollectionsViewModel : ViewModel() {
         get() = _items
 
     init {
-        mockItems()
+        setupItems()
     }
 
-    private fun mockItems() {
+    private fun setupItems() {
         val itemDataList = mutableListOf<ItemData>()
 
         for (count in 1..21) {
             val data =
-                ItemData(id = count, text = "Text for id $count", visibilityOfBar = View.GONE)
+                ItemData(id = count, text = "", visibilityOfBar = View.GONE)
             itemDataList.add(data)
         }
         _items.postValue(itemDataList)

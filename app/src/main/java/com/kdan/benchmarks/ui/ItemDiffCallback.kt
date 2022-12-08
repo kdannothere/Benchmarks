@@ -9,6 +9,10 @@ object ItemDiffCallback : DiffUtil.ItemCallback<ItemData>() {
     }
 
     override fun areContentsTheSame(oldItem: ItemData, newItem: ItemData): Boolean {
-        return (oldItem == newItem)
+        return when {
+            oldItem.text != newItem.text -> false
+            oldItem.visibilityOfBar != newItem.visibilityOfBar -> false
+            else -> true
+        }
     }
 }

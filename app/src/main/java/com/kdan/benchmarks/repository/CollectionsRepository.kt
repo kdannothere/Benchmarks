@@ -12,7 +12,7 @@ class CollectionsRepository(
     private val fragment: CollectionsFragment,
 ) {
 
-    private var _collection: List<Int>? = createList(collectionSize)
+    private var _collection: List<Byte>? = createList(collectionSize)
     private val collection get() = _collection!!
     private var index = 0
 
@@ -66,12 +66,12 @@ class CollectionsRepository(
         }
     }
 
-    private fun createList(collectionSize: Int): List<Int> {
-        return List(collectionSize) { 0 }
+    private fun createList(collectionSize: Int): List<Byte> {
+        return List(collectionSize) { "0".toByte() }
     }
 
     private fun addingBeginningArrayList(index: Int) {
-        var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
+        var array: ArrayList<Byte>? = collection.toCollection(arrayListOf())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -86,7 +86,7 @@ class CollectionsRepository(
     }
 
     private fun addingMiddleArrayList(index: Int) {
-        var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
+        var array: ArrayList<Byte>? = collection.toCollection(arrayListOf())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -100,7 +100,7 @@ class CollectionsRepository(
     }
 
     private fun addingEndArrayList(index: Int) {
-        var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
+        var array: ArrayList<Byte>? = collection.toCollection(arrayListOf())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -114,12 +114,12 @@ class CollectionsRepository(
     }
 
     private fun searchByValueArrayList(index: Int) {
-        var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
+        var array: ArrayList<Byte>? = collection.toCollection(arrayListOf())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
             val starting = System.currentTimeMillis()
-            array!!.binarySearch(0, 0, array!!.lastIndex)
+            array!!.binarySearch("0".toByte(), 0, array!!.lastIndex)
             val ending = System.currentTimeMillis()
             sumOfTime += (ending - starting).toInt()
         }
@@ -128,7 +128,7 @@ class CollectionsRepository(
     }
 
     private fun removingBeginningArrayList(index: Int) {
-        var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
+        var array: ArrayList<Byte>? = collection.toCollection(arrayListOf())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -142,7 +142,7 @@ class CollectionsRepository(
     }
 
     private fun removingMiddleArrayList(index: Int) {
-        var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
+        var array: ArrayList<Byte>? = collection.toCollection(arrayListOf())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -156,7 +156,7 @@ class CollectionsRepository(
     }
 
     private fun removingEndArrayList(index: Int) {
-        var array: ArrayList<Int>? = collection.toCollection(arrayListOf())
+        var array: ArrayList<Byte>? = collection.toCollection(arrayListOf())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -170,7 +170,7 @@ class CollectionsRepository(
     }
 
     private fun addingBeginningLinkedList(index: Int) {
-        var array: LinkedList<Int>? = collection.toCollection(LinkedList())
+        var array: LinkedList<Byte>? = collection.toCollection(LinkedList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -184,7 +184,7 @@ class CollectionsRepository(
     }
 
     private fun addingMiddleLinkedList(index: Int) {
-        var array: LinkedList<Int>? = collection.toCollection(LinkedList())
+        var array: LinkedList<Byte>? = collection.toCollection(LinkedList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -198,7 +198,7 @@ class CollectionsRepository(
     }
 
     private fun addingEndLinkedList(index: Int) {
-        var array: LinkedList<Int>? = collection.toCollection(LinkedList())
+        var array: LinkedList<Byte>? = collection.toCollection(LinkedList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -212,12 +212,12 @@ class CollectionsRepository(
     }
 
     private fun searchByValueLinkedList(index: Int) {
-        var array: LinkedList<Int>? = collection.toCollection(LinkedList())
+        var array: LinkedList<Byte>? = collection.toCollection(LinkedList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
             val starting = System.currentTimeMillis()
-            array!!.binarySearch(0, 0, array!!.lastIndex)
+            array!!.binarySearch("0".toByte(), 0, array!!.lastIndex)
             val ending = System.currentTimeMillis()
             sumOfTime += (ending - starting).toInt()
         }
@@ -226,7 +226,7 @@ class CollectionsRepository(
     }
 
     private fun removingBeginningLinkedList(index: Int) {
-        var array: LinkedList<Int>? = collection.toCollection(LinkedList())
+        var array: LinkedList<Byte>? = collection.toCollection(LinkedList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -240,7 +240,7 @@ class CollectionsRepository(
     }
 
     private fun removingMiddleLinkedList(index: Int) {
-        var array: LinkedList<Int>? = collection.toCollection(LinkedList())
+        var array: LinkedList<Byte>? = collection.toCollection(LinkedList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -254,7 +254,7 @@ class CollectionsRepository(
     }
 
     private fun removingEndLinkedList(index: Int) {
-        var array: LinkedList<Int>? = collection.toCollection(LinkedList())
+        var array: LinkedList<Byte>? = collection.toCollection(LinkedList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -268,7 +268,7 @@ class CollectionsRepository(
     }
 
     private fun addingBeginningCopyOnWriteArrayList(index: Int) {
-        var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
+        var array: CopyOnWriteArrayList<Byte>? = collection.toCollection(CopyOnWriteArrayList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -282,7 +282,7 @@ class CollectionsRepository(
     }
 
     private fun addingMiddleCopyOnWriteArrayList(index: Int) {
-        var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
+        var array: CopyOnWriteArrayList<Byte>? = collection.toCollection(CopyOnWriteArrayList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -296,7 +296,7 @@ class CollectionsRepository(
     }
 
     private fun addingEndCopyOnWriteArrayList(index: Int) {
-        var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
+        var array: CopyOnWriteArrayList<Byte>? = collection.toCollection(CopyOnWriteArrayList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -310,12 +310,12 @@ class CollectionsRepository(
     }
 
     private fun searchByValueCopyOnWriteArrayList(index: Int) {
-        var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
+        var array: CopyOnWriteArrayList<Byte>? = collection.toCollection(CopyOnWriteArrayList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
             val starting = System.currentTimeMillis()
-            array!!.binarySearch(0, 0, array!!.lastIndex)
+            array!!.binarySearch("0".toByte(), 0, array!!.lastIndex)
             val ending = System.currentTimeMillis()
             sumOfTime += (ending - starting).toInt()
         }
@@ -324,7 +324,7 @@ class CollectionsRepository(
     }
 
     private fun removingBeginningCopyOnWriteArrayList(index: Int) {
-        var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
+        var array: CopyOnWriteArrayList<Byte>? = collection.toCollection(CopyOnWriteArrayList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -338,7 +338,7 @@ class CollectionsRepository(
     }
 
     private fun removingMiddleCopyOnWriteArrayList(index: Int) {
-        var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
+        var array: CopyOnWriteArrayList<Byte>? = collection.toCollection(CopyOnWriteArrayList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) return
@@ -352,7 +352,7 @@ class CollectionsRepository(
     }
 
     private fun removingEndCopyOnWriteArrayList(index: Int) {
-        var array: CopyOnWriteArrayList<Int>? = collection.toCollection(CopyOnWriteArrayList())
+        var array: CopyOnWriteArrayList<Byte>? = collection.toCollection(CopyOnWriteArrayList())
         var sumOfTime = 0
         repeat(elementsAmount) {
             if (fragment.stop) {

@@ -33,8 +33,8 @@
     <string name="search_by_value_copy_on_write_array_list">Search by value CopyOnWriteArrayList</string>
     <string name="adding_new_tree_map">Adding new in TreeMap</string>
     <string name="search_by_key_tree_map">Search by key in TreeMap</string>
-    <string name="removing_tree_map">Adding new in TreeMap</string>
+    <string name="removing_tree_map">Removing in TreeMap</string>
     <string name="adding_new_hash_map">Adding new in HashMap</string>
     <string name="search_by_key_hash_map">Search by key in HashMap</string>
-    <string name="removing_hash_map">Adding new in HashMap</string>
+    <string name="removing_hash_map">Removing in HashMap</string>
 </resources>
