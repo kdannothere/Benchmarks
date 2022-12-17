@@ -1,0 +1,1 @@
+The application running various operations on Collections and Maps. Calculates and displays the execution time of these operations (time in seconds).
