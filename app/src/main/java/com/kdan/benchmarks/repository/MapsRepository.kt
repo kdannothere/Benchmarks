@@ -37,7 +37,7 @@ class MapsRepository {
 
     private fun finishing(index: Int, time: Int) {
         temp = index
-        items.value!![index].changeResult(newResult = time / 100) // / elementsAmount)
+        items.value!![index].changeResult(newResult = time / elementsAmount)
         items.value!![index].updateText()
         items.value!![index].changeBar(true)
         updater.postValue(true)

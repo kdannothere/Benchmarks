@@ -5,7 +5,7 @@ import android.view.View
 class ItemData(
     val id: Int,
     var text: String = "",
-    var result: Int = 0,
+    private var result: Int = 0,
     var visibilityOfBar: Int = View.GONE,
     var initialText: String = "",
 ) {
@@ -27,7 +27,7 @@ class ItemData(
     }
 
     fun updateText() {
-        changeText("$initialText $result s")
+        changeText("$initialText $result ms")
     }
 
 }

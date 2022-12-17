@@ -1,7 +1,6 @@
 package com.kdan.benchmarks.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -81,7 +80,7 @@ class CollectionsFragment : Fragment() {
 
     private fun setInitialText() {
         if (viewModel.items.value!!.first().initialText.isNotEmpty()) return
-        repeat (6) {
+        repeat(21) {
             val text: String = when (it) {
                 0 -> getString(R.string.adding_beginning_array_list)
                 1 -> getString(R.string.adding_middle_array_list)
@@ -134,17 +133,14 @@ class CollectionsFragment : Fragment() {
             val temp = viewModel.repository.temp
             when {
                 updater == true && viewModel.repository.currentOperation == -2 -> {
-                    Log.d("SHOW", "2")
                     adapter.notifyItemChanged(temp)
-                    if (temp == 5) viewModel.changeButtonName()
+                    if (temp == 20) viewModel.changeButtonName()
                     viewModel.updater.value = false
                 }
                 updater == true -> {
                     if (viewModel.repository.currentOperation == -1) {
                         viewModel.changeButtonName()
-                        Log.d("SHOW", "3")
                     } else {
-                        Log.d("SHOW", "1")
                         adapter.notifyItemChanged(temp)
                     }
                     viewModel.updater.value = false

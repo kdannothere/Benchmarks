@@ -25,7 +25,7 @@ class MapsViewModel : ViewModel() {
         if (items.value != null) return
         val itemDataList = mutableListOf<ItemData>()
 
-        repeat (6) {
+        repeat(6) {
             val data = ItemData(id = it)
             itemDataList.add(data)
         }
@@ -69,12 +69,14 @@ class MapsViewModel : ViewModel() {
         if (stop) buttonText[0] = buttonText[2] else buttonText[0] = buttonText[1]
         updateButtonText(buttonText.first())
     }
+
     // check collectionSize and elementsAmount
     private fun checkRange(): Boolean {
-        val correctRange = 10000..10000000
+        val correctRange = 1000000..10000000
         if (collectionSize in correctRange &&
             elementsAmount in correctRange &&
-            elementsAmount <= collectionSize) return true
+            elementsAmount <= collectionSize
+        ) return true
         return false
     }
 

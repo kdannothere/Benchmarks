@@ -81,7 +81,7 @@ class MapsFragment : Fragment() {
 
     private fun setInitialText() {
         if (viewModel.items.value!!.first().initialText.isNotEmpty()) return
-        repeat (6) {
+        repeat(6) {
             val text: String = when (it) {
                 0 -> getString(R.string.adding_new_tree_map)
                 1 -> getString(R.string.search_by_key_tree_map)

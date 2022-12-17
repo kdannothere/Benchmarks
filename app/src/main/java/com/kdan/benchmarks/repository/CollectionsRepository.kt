@@ -21,7 +21,7 @@ class CollectionsRepository {
             Looper.prepare()
             currentOperation = 0
             changeAllBars()
-            repeat(6) {
+            repeat(21) {
                 when (it) {
                     0 -> addingBeginningArrayList(it)
                     1 -> addingMiddleArrayList(it)
@@ -54,7 +54,7 @@ class CollectionsRepository {
 
     private fun finishing(index: Int, time: Int) {
         temp = index
-        items.value!![index].changeResult(newResult = time / 100) // / elementsAmount)
+        items.value!![index].changeResult(newResult = time / elementsAmount)
         items.value!![index].updateText()
         items.value!![index].changeBar(true)
         updater.postValue(true)
@@ -69,7 +69,7 @@ class CollectionsRepository {
     }
 
     private fun changeAllBars(stop: Boolean = false) {
-        repeat(6) {
+        repeat(21) {
             temp = it
             items.value!![it].changeBar(stop)
             updater.postValue(true)
@@ -119,10 +119,9 @@ class CollectionsRepository {
             array.add(0, 1)
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
-            ++time
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun addingMiddleArrayList(index: Int) {
@@ -144,8 +143,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun addingEndArrayList(index: Int) {
@@ -167,8 +166,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun searchByValueArrayList(index: Int) {
@@ -190,8 +189,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingBeginningArrayList(index: Int) {
@@ -213,8 +212,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingMiddleArrayList(index: Int) {
@@ -236,8 +235,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingEndArrayList(index: Int) {
@@ -259,8 +258,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun addingBeginningLinkedList(index: Int) {
@@ -282,8 +281,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun addingMiddleLinkedList(index: Int) {
@@ -305,8 +304,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun addingEndLinkedList(index: Int) {
@@ -328,8 +327,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun searchByValueLinkedList(index: Int) {
@@ -351,8 +350,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingBeginningLinkedList(index: Int) {
@@ -374,8 +373,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingMiddleLinkedList(index: Int) {
@@ -397,8 +396,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingEndLinkedList(index: Int) {
@@ -420,8 +419,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun addingBeginningCopyOnWriteArrayList(index: Int) {
@@ -443,8 +442,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun addingMiddleCopyOnWriteArrayList(index: Int) {
@@ -466,8 +465,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun addingEndCopyOnWriteArrayList(index: Int) {
@@ -489,8 +488,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun searchByValueCopyOnWriteArrayList(index: Int) {
@@ -512,8 +511,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingBeginningCopyOnWriteArrayList(index: Int) {
@@ -535,8 +534,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingMiddleCopyOnWriteArrayList(index: Int) {
@@ -558,8 +557,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
     private fun removingEndCopyOnWriteArrayList(index: Int) {
@@ -581,8 +580,8 @@ class CollectionsRepository {
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        finishing(index, time)
         array.clear()
+        finishing(index, time)
     }
 
 }

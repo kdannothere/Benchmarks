@@ -7,7 +7,7 @@ import com.kdan.benchmarks.viewmodel.ItemData
 import com.kdan.benchmarks.databinding.ItemViewBinding
 
 class RecycleViewAdapter
-    : ListAdapter<ItemData, ItemViewHolder> (ItemDiffCallback) {
+    : ListAdapter<ItemData, ItemViewHolder>(ItemDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
 
