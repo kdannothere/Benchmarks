@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -39,6 +38,7 @@ class MapsFragment : Fragment() {
         viewModel.updateButtonText(setupButtonText())
         setInitialText()
         button = binding.buttonStartStop
+        observe()
 
         setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
             val result = bundle.getInt(viewModel.tagCollectionSize)
@@ -46,17 +46,8 @@ class MapsFragment : Fragment() {
         }
 
         button.setOnClickListener {
-            // setElementsAmount()
+            setElementsAmount()
             viewModel.start()
-        }
-
-        viewModel.items.observe(viewLifecycleOwner) { items ->
-            adapter.submitList(items)
-            Log.d("SHOW", "submitList")
-        }
-
-        viewModel.currentButtonText.observe(viewLifecycleOwner) {
-            button.text = viewModel.buttonText.first()
         }
 
         return binding.root
@@ -117,6 +108,38 @@ class MapsFragment : Fragment() {
         }
         viewModel.buttonText = list
         return list.first()
+    }
+
+    private fun observe() {
+        viewModel.items.observe(viewLifecycleOwner) { items ->
+            adapter.submitList(items)
+        }
+
+        viewModel.updater.observe(viewLifecycleOwner) { updater ->
+            val temp = viewModel.repository.temp
+            when {
+                updater == true && viewModel.repository.currentOperation == -2 -> {
+                    Log.d("SHOW", "2")
+                    adapter.notifyItemChanged(temp)
+                    if (temp == 5) viewModel.changeButtonName()
+                    viewModel.updater.value = false
+                }
+                updater == true -> {
+                    if (viewModel.repository.currentOperation == -1) {
+                        viewModel.changeButtonName()
+                        Log.d("SHOW", "3")
+                    } else {
+                        Log.d("SHOW", "1")
+                        adapter.notifyItemChanged(temp)
+                    }
+                    viewModel.updater.value = false
+                }
+            }
+        }
+
+        viewModel.currentButtonText.observe(viewLifecycleOwner) {
+            button.text = viewModel.buttonText.first()
+        }
     }
 
 }

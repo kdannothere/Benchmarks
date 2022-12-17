@@ -1,48 +1,81 @@
 package com.kdan.benchmarks.viewmodel
 
-import android.view.View
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kdan.benchmarks.repository.CollectionsRepository
 
 class CollectionsViewModel : ViewModel() {
-    private val _items = MutableLiveData<List<ItemData>>()
-    val items: LiveData<List<ItemData>>
-        get() = _items
 
-    init {
-        setupItems()
-    }
+    val items = MutableLiveData<List<ItemData>>()
+    val updater = MutableLiveData<Boolean>() // updates items in the adapter if value is true
+    var collectionSize = 0
+    val tagCollectionSize = "collectionSize"
+    var elementsAmount = 0
+    val tagElementsAmount = "elementsAmount"
+    var buttonText = mutableListOf<String>()
+    val repository = CollectionsRepository()
+    private val _currentButtonText = MutableLiveData<String>()
+    val currentButtonText: LiveData<String> // indexes: 0 current, 1 start, 2 stop
+        get() = _currentButtonText
 
-    private fun setupItems() {
+
+    fun setupItems() {
+        if (items.value != null) return
         val itemDataList = mutableListOf<ItemData>()
 
-        for (count in 1..21) {
-            val data =
-                ItemData(id = count, text = "", visibilityOfBar = View.GONE)
+        repeat (6) {
+            val data = ItemData(id = it)
             itemDataList.add(data)
         }
-        _items.postValue(itemDataList)
+        items.value = itemDataList
+        setupListUpdater()
     }
 
-    fun changeText(index: Int, newText: String) {
-        _items.value?.get(index)?.text = newText
+    private fun setupListUpdater() {
+        updater.value = false
     }
 
-    fun changeResult(index: Int, newResult: Int) {
-        _items.value!![index].result = newResult
-    }
-
-    fun changeBar(index: Int, stop: Boolean = false) {
-        if (stop) {
-            _items.value!![index].visibilityOfBar = View.GONE
-        } else {
-            val currentValue = _items.value!![index].visibilityOfBar
-            if (currentValue == View.VISIBLE) {
-                _items.value!![index].visibilityOfBar = View.GONE
-            } else {
-                _items.value!![index].visibilityOfBar = View.VISIBLE
+    fun start() {
+        Thread.sleep(200)
+        if (checkRange()) {
+            if (repository.isRunning) {
+                repository.currentOperation = -2
+                return
             }
+            changeButtonName(true)
+            prepRep()
+            repository.startAll()
         }
     }
+
+    // prepare repository
+    private fun prepRep() {
+        repository.let {
+            it.collectionSize = collectionSize
+            it.elementsAmount = elementsAmount
+            it.items = items
+            it.updater = updater
+        }
+    }
+
+    fun updateButtonText(newText: String) {
+        _currentButtonText.value = newText
+    }
+
+    fun changeButtonName(stop: Boolean = false) {
+        // indexes: 0 current, 1 start, 2 stop
+        if (stop) buttonText[0] = buttonText[2] else buttonText[0] = buttonText[1]
+        updateButtonText(buttonText.first())
+    }
+    // check collectionSize and elementsAmount
+    private fun checkRange(): Boolean {
+        val correctRange = 10000..10000000
+        if (collectionSize in correctRange &&
+            elementsAmount in correctRange &&
+            elementsAmount <= collectionSize) return true
+        return false
+    }
+
 }

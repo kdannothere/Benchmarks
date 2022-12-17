@@ -27,7 +27,7 @@ class ItemData(
     }
 
     fun updateText() {
-        changeText("$initialText $result ms")
+        changeText("$initialText $result s")
     }
 
 }

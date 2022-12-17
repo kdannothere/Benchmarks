@@ -1,29 +1,25 @@
 package com.kdan.benchmarks.viewmodel
 
 
-import android.app.Activity
-import android.content.Context
-import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kdan.benchmarks.R
 import com.kdan.benchmarks.repository.MapsRepository
 
 class MapsViewModel : ViewModel() {
 
     val items = MutableLiveData<List<ItemData>>()
-    var collectionSize = 10000
+    val updater = MutableLiveData<Boolean>() // updates items in the adapter if value is true
+    var collectionSize = 0
     val tagCollectionSize = "collectionSize"
-    var elementsAmount = 10000
+    var elementsAmount = 0
     val tagElementsAmount = "elementsAmount"
     var buttonText = mutableListOf<String>()
     val repository = MapsRepository()
     private val _currentButtonText = MutableLiveData<String>()
     val currentButtonText: LiveData<String> // indexes: 0 current, 1 start, 2 stop
         get() = _currentButtonText
+
 
     fun setupItems() {
         if (items.value != null) return
@@ -34,27 +30,23 @@ class MapsViewModel : ViewModel() {
             itemDataList.add(data)
         }
         items.value = itemDataList
+        setupListUpdater()
+    }
+
+    private fun setupListUpdater() {
+        updater.value = false
     }
 
     fun start() {
-        // Log.d("SHOW", "text = " + items.value!!.last().text)
-        //setElementsAmount()
-        if (repository.stop) {
-            repository.changeAllBars(true)
-            changeButtonName()
-            Thread.sleep(100)
-            repository.stop = false
-            return
-        }
+        Thread.sleep(200)
         if (checkRange()) {
+            if (repository.isRunning) {
+                repository.currentOperation = -2
+                return
+            }
             changeButtonName(true)
             prepRep()
-            repository.changeAllBars()
             repository.startAll()
-            changeButtonName()
-        } else {
-            repository.stop = false
-            // Toast.makeText(Activity().applicationContext, R.string.check_range_elements_amount, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -64,11 +56,12 @@ class MapsViewModel : ViewModel() {
             it.collectionSize = collectionSize
             it.elementsAmount = elementsAmount
             it.items = items
+            it.updater = updater
         }
     }
 
     fun updateButtonText(newText: String) {
-        _currentButtonText.postValue(newText)
+        _currentButtonText.value = newText
     }
 
     fun changeButtonName(stop: Boolean = false) {
@@ -76,7 +69,7 @@ class MapsViewModel : ViewModel() {
         if (stop) buttonText[0] = buttonText[2] else buttonText[0] = buttonText[1]
         updateButtonText(buttonText.first())
     }
-
+    // check collectionSize and elementsAmount
     private fun checkRange(): Boolean {
         val correctRange = 10000..10000000
         if (collectionSize in correctRange &&
