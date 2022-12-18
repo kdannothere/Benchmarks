@@ -12,7 +12,7 @@ import com.kdan.benchmarks.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
     private lateinit var viewPager: ViewPager2
     private lateinit var dialog: DialogFragment
 
