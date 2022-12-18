@@ -7,7 +7,7 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.ArrayList
 
-class CollectionsRepository {
+class CollectionsRepository {//new
     var collectionSize: Int = 0
     var elementsAmount: Int = 0
     var items = MutableLiveData<List<ItemData>>()
