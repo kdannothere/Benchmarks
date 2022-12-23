@@ -14,6 +14,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kdan.benchmarks.MainActivity
 import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
 import com.kdan.benchmarks.viewmodel.MapsViewModel
@@ -38,9 +39,10 @@ class MapsFragment : Fragment() {
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
-        viewModel.updateButtonText(setupButtonText())
-        setInitialText()
+        setupButtonText()
+        setupItemsInitialText()
         button = binding.buttonStartStop
+        button.text = viewModel.buttonText.first()
         observe()
 
         setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
@@ -49,7 +51,7 @@ class MapsFragment : Fragment() {
         }
 
         button.setOnClickListener {
-            setElementsAmount()
+            // setElementsAmount()
             viewModel.start()
         }
 
@@ -88,13 +90,13 @@ class MapsFragment : Fragment() {
         if (input.isNotBlank()) {
             viewModel.elementsAmount = input.toInt()
         } else {
-            val activity = this.requireActivity() as MainActivity
+            val activity = requireActivity() as MainActivity
             activity.binding.floatingButton.performClick()
         }
         hideKeyboardFrom(requireContext(), button)
     }
 
-    private fun setInitialText() {
+    private fun setupItemsInitialText() {
         if (viewModel.items.value!!.first().initialText.isNotEmpty()) return
         repeat(6) {
             val text: String = when (it) {
@@ -110,7 +112,8 @@ class MapsFragment : Fragment() {
         }
     }
 
-    private fun setupButtonText(): String {
+    private fun setupButtonText() {
+        if (viewModel.buttonText.isNotEmpty()) return
         val list = MutableList(3) { "" }
         repeat(3) {
             val text: String = when (it) {
@@ -122,7 +125,6 @@ class MapsFragment : Fragment() {
             list[it] = text
         }
         viewModel.buttonText = list
-        return list.first()
     }
 
     private fun observe() {
@@ -131,29 +133,32 @@ class MapsFragment : Fragment() {
         }
 
         viewModel.updater.observe(viewLifecycleOwner) { updater ->
-            val temp = viewModel.repository.temp
             when {
                 updater == true && viewModel.repository.currentOperation == -2 -> {
-                    Log.d("SHOW", "2")
+                    val temp = viewModel.repository.temp
                     adapter.notifyItemChanged(temp)
-                    if (temp == 5) viewModel.changeButtonName()
-                    viewModel.updater.value = false
-                }
-                updater == true -> {
-                    if (viewModel.repository.currentOperation == -1) {
-                        viewModel.changeButtonName()
-                        Log.d("SHOW", "3")
-                    } else {
-                        Log.d("SHOW", "1")
-                        adapter.notifyItemChanged(temp)
+                    if (temp == 5) {
+                        viewModel.changeButtonName(true)
+                        button.text = viewModel.buttonText.first()
                     }
                     viewModel.updater.value = false
                 }
+                updater == true -> {
+                    val temp = viewModel.repository.temp
+                    if (viewModel.repository.currentOperation == -1) {
+                        viewModel.changeButtonName(true)
+                        button.text = viewModel.buttonText.first()
+                        //Log.d("SHOW", "1")
+                    } else {
+                        adapter.notifyItemChanged(temp)
+                        if (viewModel.repository.currentOperation == 0) {
+                            button.text = viewModel.buttonText.first()
+                        }
+                    }
+                    viewModel.updater.value = false
+                    //Log.d("SHOW", "end temp = $temp")
+                }
             }
-        }
-
-        viewModel.currentButtonText.observe(viewLifecycleOwner) {
-            button.text = viewModel.buttonText.first()
         }
     }
 

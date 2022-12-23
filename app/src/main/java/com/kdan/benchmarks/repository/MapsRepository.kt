@@ -1,6 +1,7 @@
 package com.kdan.benchmarks.repository
 
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
@@ -41,7 +42,6 @@ class MapsRepository {
         items.value!![index].updateText()
         items.value!![index].changeBar(true)
         updater.postValue(true)
-        Thread.sleep(100)
     }
 
     private fun stopping(index: Int) {

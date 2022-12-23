@@ -13,6 +13,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kdan.benchmarks.MainActivity
 import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
 import com.kdan.benchmarks.viewmodel.CollectionsViewModel
