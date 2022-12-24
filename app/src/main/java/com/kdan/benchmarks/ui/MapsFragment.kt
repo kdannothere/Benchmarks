@@ -1,6 +1,5 @@
 package com.kdan.benchmarks.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
@@ -127,7 +126,6 @@ class MapsFragment : Fragment() {
         viewModel.buttonText = list
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun observe() {
         viewModel.items.observe(viewLifecycleOwner) { items ->
             adapter.submitList(items)
@@ -161,6 +159,7 @@ class MapsFragment : Fragment() {
             adapter.notifyItemChanged(it)
             viewModel.repository.temp.remove(it)
         }
+        temp.clear()
     }
 
     interface MapsCallback {

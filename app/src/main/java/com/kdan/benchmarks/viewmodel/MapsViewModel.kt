@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kdan.benchmarks.repository.MapsRepository
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
+import com.kdan.benchmarks.utility.Checker
 
 class MapsViewModel : ViewModel() {
 
@@ -41,7 +42,11 @@ class MapsViewModel : ViewModel() {
         }
         if (repository.isDone) {
             Thread {
-                    if (checkRange()) {
+                    if (
+                        Checker.checkCollectionSize(collectionSize) &&
+                        Checker.checkElementsAmount(elementsAmount) &&
+                        Checker.isGreaterOrEqual(collectionSize, elementsAmount)
+                    ) {
                         changeButtonName()
                         prepRep()
                         repository.startAll()
@@ -70,14 +75,6 @@ class MapsViewModel : ViewModel() {
         } else {
             buttonText[0] = buttonText[2] // text = stop
         }
-    }
-
-    private fun checkRange(): Boolean {
-        val correctRange = 20000..10000000
-        if (elementsAmount in correctRange &&
-            elementsAmount <= collectionSize
-        ) return true
-        return false
     }
 
 }
