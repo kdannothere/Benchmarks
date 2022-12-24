@@ -1,6 +1,7 @@
 package com.kdan.benchmarks.viewmodel
 
-
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kdan.benchmarks.repository.MapsRepository
@@ -9,14 +10,13 @@ import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
 class MapsViewModel : ViewModel() {
 
     val items = MutableLiveData<List<ItemData>>()
-    val updater = MutableLiveData<Boolean>() // updates items in the adapter if value is true
-    var collectionSize = 30000
+    val needUpdate = MutableLiveData<Boolean>() // updates items in the adapter if value is true
+    var collectionSize = 3000000
     val tagCollectionSize = CollectionSizeDialogFragment().tagCollectionSize
-    var elementsAmount = 30000
+    var elementsAmount = 3000000
     val tagElementsAmount = "elementsAmount"
     val repository = MapsRepository()
     var buttonText = mutableListOf<String>()
-
 
     fun setupItems() {
         if (items.value != null) return
@@ -31,20 +31,28 @@ class MapsViewModel : ViewModel() {
     }
 
     private fun setupListUpdater() {
-        updater.value = false
+        needUpdate.postValue(false)
     }
 
-    fun start() {
-        if (checkRange()) {
-            if (repository.isRunning) {
-                repository.currentOperation = -2
-                return
-            }
-            changeButtonName()
-            prepRep()
-            repository.startAll()
+    fun start(context: Context) {
+        if (repository.isRunning) {
+            repository.currentOperation = -2
+            return
         }
+        if (repository.isDone) {
+            Thread {
+                    if (checkRange()) {
+                        changeButtonName()
+                        prepRep()
+                        repository.startAll()
+                    }
+            }.start()
+            return
+        }
+        Toast.makeText(context, "Wait the second, please:)", Toast.LENGTH_SHORT).show()
     }
+
+
 
     // prepare repository
     private fun prepRep() {
@@ -52,7 +60,7 @@ class MapsViewModel : ViewModel() {
             it.collectionSize = collectionSize
             it.elementsAmount = elementsAmount
             it.items = items
-            it.updater = updater
+            it.needUpdate = needUpdate
         }
     }
 

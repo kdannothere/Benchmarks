@@ -1,7 +1,5 @@
 package com.kdan.benchmarks.repository
 
-import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
@@ -10,54 +8,52 @@ class MapsRepository {
     var collectionSize: Int = 0
     var elementsAmount: Int = 0
     var items = MutableLiveData<List<ItemData>>()
-    var updater = MutableLiveData<Boolean>() // updates items in the adapter if value is true
-    val isRunning get() = currentOperation >= 0
+    private val itemsAmount by lazy { items.value!!.size }
+    var needUpdate = MutableLiveData<Boolean>() // updates items in the adapter if value is true
     var currentOperation = -1
-    var temp = 0
+    val isRunning get() = currentOperation >= 0
+    var isDone = true
+    var temp = mutableSetOf<Int>()
 
     fun startAll() {
-        Thread {
-            Looper.prepare()
-            currentOperation = 0
-            changeAllBars()
-            repeat(6) {
-                when (it) {
-                    0 -> addingTreeMap(it)
-                    1 -> searchingTreeMap(it)
-                    2 -> removingTreeMap(it)
-                    3 -> addingHashMap(it)
-                    4 -> searchingHashMap(it)
-                    5 -> removingHashMap(it)
-                }
+        isDone = false
+        currentOperation = 0
+        changeAllBars()
+        needUpdate.postValue(true)
+        repeat(itemsAmount) {
+            when (it) {
+                0 -> addingTreeMap(it)
+                1 -> searchingTreeMap(it)
+                2 -> removingTreeMap(it)
+                3 -> addingHashMap(it)
+                4 -> searchingHashMap(it)
+                5 -> removingHashMap(it)
             }
-            Thread.sleep(100)
-            currentOperation = -1
-            updater.postValue(true)
-        }.start()
+        }
+        currentOperation = -1
+        isDone = true
+        needUpdate.postValue(true)
     }
 
     private fun finishing(index: Int, time: Int) {
-        temp = index
+        temp += index
         items.value!![index].changeResult(newResult = time / elementsAmount)
         items.value!![index].updateText()
         items.value!![index].changeBar(true)
-        updater.postValue(true)
+        needUpdate.postValue(true)
     }
 
     private fun stopping(index: Int) {
-        temp = index
+        temp += index
         items.value!![index].changeBar(true)
-        updater.postValue(true)
-        Thread.sleep(100)
     }
 
     private fun changeAllBars(stop: Boolean = false) {
-        repeat(6) {
-            temp = it
+        repeat(itemsAmount) {
             items.value!![it].changeBar(stop)
-            updater.postValue(true)
-            Thread.sleep(100)
+            temp += it
         }
+        needUpdate.postValue(true)
     }
 
     private fun createTreeMap(): TreeMap<Int, Byte> {
@@ -82,22 +78,23 @@ class MapsRepository {
             return
         }
         currentOperation = index
-        val map: TreeMap<Int, Byte> = createTreeMap()
+        var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
-        var newKey = map.size + 1
+        var newKey = map!!.size + 1
         repeat(elementsAmount) {
             if (!isRunning) {
-                map.clear()
+                map!!.clear()
                 stopping(index)
                 return
             }
             val starting = System.currentTimeMillis()
-            map[newKey] = 0
+            map!![newKey] = 0
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
             ++newKey
         }
         map.clear()
+        map = null
         finishing(index, time)
     }
 
@@ -107,20 +104,21 @@ class MapsRepository {
             return
         }
         currentOperation = index
-        val map: TreeMap<Int, Byte> = createTreeMap()
+        var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
         repeat(elementsAmount) {
             if (!isRunning) {
-                map.clear()
+                map!!.clear()
                 stopping(index)
                 return
             }
             val starting = System.currentTimeMillis()
-            map.containsKey(0)
+            map!!.containsKey(0)
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        map.clear()
+        map!!.clear()
+        map = null
         finishing(index, time)
     }
 
@@ -130,22 +128,23 @@ class MapsRepository {
             return
         }
         currentOperation = index
-        val map: TreeMap<Int, Byte> = createTreeMap()
+        var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
         var key = 0
         repeat(elementsAmount) {
             if (!isRunning) {
-                map.clear()
+                map!!.clear()
                 stopping(index)
                 return
             }
             val starting = System.currentTimeMillis()
-            map.remove(key)
+            map!!.remove(key)
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
             ++key
         }
-        map.clear()
+        map!!.clear()
+        map = null
         finishing(index, time)
     }
 
@@ -155,22 +154,23 @@ class MapsRepository {
             return
         }
         currentOperation = index
-        val map: HashMap<Int, Byte> = createHashMap()
+        var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
-        var newKey = map.size + 1
+        var newKey = map!!.size + 1
         repeat(elementsAmount) {
             if (!isRunning) {
-                map.clear()
+                map!!.clear()
                 stopping(index)
                 return
             }
             val starting = System.currentTimeMillis()
-            map[newKey] = 0
+            map!![newKey] = 0
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
             ++newKey
         }
         map.clear()
+        map = null
         finishing(index, time)
     }
 
@@ -180,20 +180,21 @@ class MapsRepository {
             return
         }
         currentOperation = index
-        val map: HashMap<Int, Byte> = createHashMap()
+        var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
         repeat(elementsAmount) {
             if (!isRunning) {
-                map.clear()
+                map!!.clear()
                 stopping(index)
                 return
             }
             val starting = System.currentTimeMillis()
-            map.containsKey(0)
+            map!!.containsKey(0)
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
         }
-        map.clear()
+        map!!.clear()
+        map = null
         finishing(index, time)
     }
 
@@ -203,22 +204,23 @@ class MapsRepository {
             return
         }
         currentOperation = index
-        val map: HashMap<Int, Byte> = createHashMap()
+        var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
         var key = 0
         repeat(elementsAmount) {
             if (!isRunning) {
-                map.clear()
+                map!!.clear()
                 stopping(index)
                 return
             }
             val starting = System.currentTimeMillis()
-            map.remove(key)
+            map!!.remove(key)
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
             ++key
         }
-        map.clear()
+        map!!.clear()
+        map = null
         finishing(index, time)
     }
 

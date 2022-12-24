@@ -1,9 +1,9 @@
 package com.kdan.benchmarks.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -52,7 +52,7 @@ class MapsFragment : Fragment() {
 
         button.setOnClickListener {
             // setElementsAmount()
-            viewModel.start()
+            viewModel.start(requireContext())
         }
 
         return binding.root
@@ -127,39 +127,45 @@ class MapsFragment : Fragment() {
         viewModel.buttonText = list
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun observe() {
         viewModel.items.observe(viewLifecycleOwner) { items ->
             adapter.submitList(items)
         }
 
-        viewModel.updater.observe(viewLifecycleOwner) { updater ->
-            when {
-                updater == true && viewModel.repository.currentOperation == -2 -> {
-                    val temp = viewModel.repository.temp
-                    adapter.notifyItemChanged(temp)
-                    if (temp == 5) {
+        viewModel.needUpdate.observe(viewLifecycleOwner) { updater ->
+            if (updater) {
+                when {
+                    viewModel.repository.isDone -> {
                         viewModel.changeButtonName(true)
-                        button.text = viewModel.buttonText.first()
+                        button.text = viewModel.buttonText.first() // button.text = start
+                        updateCell()
                     }
-                    viewModel.updater.value = false
-                }
-                updater == true -> {
-                    val temp = viewModel.repository.temp
-                    if (viewModel.repository.currentOperation == -1) {
-                        viewModel.changeButtonName(true)
-                        button.text = viewModel.buttonText.first()
-                        //Log.d("SHOW", "1")
-                    } else {
-                        adapter.notifyItemChanged(temp)
+                    viewModel.repository.isRunning -> {
+                        updateCell()
                         if (viewModel.repository.currentOperation == 0) {
-                            button.text = viewModel.buttonText.first()
+                            button.text = viewModel.buttonText.first() // button.text = stop
+                            updateCell()
                         }
                     }
-                    viewModel.updater.value = false
-                    //Log.d("SHOW", "end temp = $temp")
                 }
+                viewModel.needUpdate.value = false
             }
         }
+    }
+
+    private fun updateCell() {
+        val temp = mutableSetOf<Int>()
+        temp.addAll(viewModel.repository.temp)
+        temp.forEach {
+            adapter.notifyItemChanged(it)
+            viewModel.repository.temp.remove(it)
+        }
+    }
+
+    interface MapsCallback {
+        fun onSuccess()
+        fun onFailure()
     }
 
 }
