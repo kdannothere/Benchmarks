@@ -1,5 +1,6 @@
 package com.kdan.benchmarks.repository
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
@@ -9,7 +10,6 @@ class MapsRepository {
     var elementsAmount: Int = 0
     var items = MutableLiveData<List<ItemData>>()
     private val itemsAmount by lazy { items.value!!.size }
-    var needUpdate = MutableLiveData<Boolean>() // updates items in the adapter if value is true
     var currentOperation = -1
     val isRunning get() = currentOperation >= 0
     var isDone = true
@@ -19,8 +19,8 @@ class MapsRepository {
         isDone = false
         currentOperation = 0
         changeAllBars()
-        needUpdate.postValue(true)
         repeat(itemsAmount) {
+            Log.d("SHOW", it.toString())
             when (it) {
                 0 -> addingTreeMap(it)
                 1 -> searchingTreeMap(it)
@@ -32,7 +32,6 @@ class MapsRepository {
         }
         currentOperation = -1
         isDone = true
-        needUpdate.postValue(true)
     }
 
     private fun finishing(index: Int, time: Int) {
@@ -40,7 +39,6 @@ class MapsRepository {
         items.value!![index].changeResult(newResult = time / elementsAmount)
         items.value!![index].updateText()
         items.value!![index].changeBar(true)
-        needUpdate.postValue(true)
     }
 
     private fun stopping(index: Int) {
@@ -53,7 +51,6 @@ class MapsRepository {
             items.value!![it].changeBar(stop)
             temp += it
         }
-        needUpdate.postValue(true)
     }
 
     private fun createTreeMap(): TreeMap<Int, Byte> {
@@ -87,6 +84,7 @@ class MapsRepository {
                 stopping(index)
                 return
             }
+            if (it % 100000 == 0) Log.d("SHOW", "it = $it")
             val starting = System.currentTimeMillis()
             map!![newKey] = 0
             val ending = System.currentTimeMillis()

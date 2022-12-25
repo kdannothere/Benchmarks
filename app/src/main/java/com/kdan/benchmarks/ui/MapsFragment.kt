@@ -1,14 +1,17 @@
 package com.kdan.benchmarks.ui
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,15 +19,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.MainActivity
 import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
+import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.MapsViewModel
+import java.util.*
+import kotlin.concurrent.timerTask
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), Callback {
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecycleViewAdapter
     private val viewModel: MapsViewModel by viewModels()
+    lateinit var mainHandler: Handler
+    var runnable: Runnable? = null
+    private val delay = 200
     private lateinit var button: Button
 
     override fun onCreateView(
@@ -38,12 +47,16 @@ class MapsFragment : Fragment() {
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
+        mainHandler = Handler(Looper.getMainLooper())
         setupButtonText()
         setupItemsInitialText()
         button = binding.buttonStartStop
-        button.text = viewModel.buttonText.first()
+        button.text = viewModel.buttonText[0]
         observe()
+        return binding.root
+    }
 
+    private fun observe() {
         setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
             val result = bundle.getInt(viewModel.tagCollectionSize)
             viewModel.collectionSize = result
@@ -53,8 +66,44 @@ class MapsFragment : Fragment() {
             // setElementsAmount()
             viewModel.start(requireContext())
         }
+        viewModel.items.observe(viewLifecycleOwner) { items ->
+            adapter.submitList(items)
+        }
+    }
 
-        return binding.root
+    override fun onResume() {
+        button.text = viewModel.buttonText[0]
+        mainHandler.postDelayed(Runnable {
+            mainHandler.postDelayed(runnable!!, delay.toLong())
+            update()
+        }.also { runnable = it }, delay.toLong())
+        super.onResume()
+    }
+
+    override fun onUpdate() {
+        updateCell()
+    }
+
+    private fun update() {
+        when {
+            viewModel.repository.isDone -> {
+                onUpdate()
+                viewModel.changeButtonName(true)
+                button.text = viewModel.buttonText[0]
+            }
+            viewModel.repository.isRunning -> {
+                onUpdate()
+                if (viewModel.repository.currentOperation == 0) {
+                    button.text = viewModel.buttonText[0]
+                }
+            }
+            else -> return
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mainHandler.removeCallbacks(runnable!!)
     }
 
     override fun onDestroyView() {
@@ -126,32 +175,6 @@ class MapsFragment : Fragment() {
         viewModel.buttonText = list
     }
 
-    private fun observe() {
-        viewModel.items.observe(viewLifecycleOwner) { items ->
-            adapter.submitList(items)
-        }
-
-        viewModel.needUpdate.observe(viewLifecycleOwner) { updater ->
-            if (updater) {
-                when {
-                    viewModel.repository.isDone -> {
-                        viewModel.changeButtonName(true)
-                        button.text = viewModel.buttonText.first() // button.text = start
-                        updateCell()
-                    }
-                    viewModel.repository.isRunning -> {
-                        updateCell()
-                        if (viewModel.repository.currentOperation == 0) {
-                            button.text = viewModel.buttonText.first() // button.text = stop
-                            updateCell()
-                        }
-                    }
-                }
-                viewModel.needUpdate.value = false
-            }
-        }
-    }
-
     private fun updateCell() {
         val temp = mutableSetOf<Int>()
         temp.addAll(viewModel.repository.temp)
@@ -160,11 +183,6 @@ class MapsFragment : Fragment() {
             viewModel.repository.temp.remove(it)
         }
         temp.clear()
-    }
-
-    interface MapsCallback {
-        fun onSuccess()
-        fun onFailure()
     }
 
 }

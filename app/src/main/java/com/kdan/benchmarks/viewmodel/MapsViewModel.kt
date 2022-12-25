@@ -11,10 +11,9 @@ import com.kdan.benchmarks.utility.Checker
 class MapsViewModel : ViewModel() {
 
     val items = MutableLiveData<List<ItemData>>()
-    val needUpdate = MutableLiveData<Boolean>() // updates items in the adapter if value is true
-    var collectionSize = 3000000
+    var collectionSize = 1000000
     val tagCollectionSize = CollectionSizeDialogFragment().tagCollectionSize
-    var elementsAmount = 3000000
+    var elementsAmount = 1000000
     val tagElementsAmount = "elementsAmount"
     val repository = MapsRepository()
     var buttonText = mutableListOf<String>()
@@ -28,11 +27,6 @@ class MapsViewModel : ViewModel() {
             itemDataList.add(data)
         }
         items.value = itemDataList
-        setupListUpdater()
-    }
-
-    private fun setupListUpdater() {
-        needUpdate.postValue(false)
     }
 
     fun start(context: Context) {
@@ -65,7 +59,6 @@ class MapsViewModel : ViewModel() {
             it.collectionSize = collectionSize
             it.elementsAmount = elementsAmount
             it.items = items
-            it.needUpdate = needUpdate
         }
     }
 
