@@ -1,26 +1,25 @@
 package com.kdan.benchmarks.repository
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
+import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
 
-class MapsRepository {
+class MapsRepository : Callback {
     var collectionSize: Int = 0
     var elementsAmount: Int = 0
-    var items = MutableLiveData<List<ItemData>>()
-    private val itemsAmount by lazy { items.value!!.size }
+    var items = mutableListOf<ItemData>()
+    private val itemsAmount by lazy { items.size }
     var currentOperation = -1
     val isRunning get() = currentOperation >= 0
     var isDone = true
-    var temp = mutableSetOf<Int>()
+    private var temp = mutableSetOf<Int>()
 
     fun startAll() {
         isDone = false
         currentOperation = 0
         changeAllBars()
+        saveResult()
         repeat(itemsAmount) {
-            Log.d("SHOW", it.toString())
             when (it) {
                 0 -> addingTreeMap(it)
                 1 -> searchingTreeMap(it)
@@ -30,25 +29,27 @@ class MapsRepository {
                 5 -> removingHashMap(it)
             }
         }
+        saveResult()
         currentOperation = -1
         isDone = true
     }
 
     private fun finishing(index: Int, time: Int) {
         temp += index
-        items.value!![index].changeResult(newResult = time / elementsAmount)
-        items.value!![index].updateText()
-        items.value!![index].changeBar(true)
+        items[index].changeResult(newResult = time / elementsAmount)
+        items[index].updateText()
+        items[index].changeBar(true)
+        saveResult()
     }
 
     private fun stopping(index: Int) {
+        items[index].changeBar(true)
         temp += index
-        items.value!![index].changeBar(true)
     }
 
     private fun changeAllBars(stop: Boolean = false) {
         repeat(itemsAmount) {
-            items.value!![it].changeBar(stop)
+            items[it].changeBar(stop)
             temp += it
         }
     }
@@ -84,7 +85,6 @@ class MapsRepository {
                 stopping(index)
                 return
             }
-            if (it % 100000 == 0) Log.d("SHOW", "it = $it")
             val starting = System.currentTimeMillis()
             map!![newKey] = 0
             val ending = System.currentTimeMillis()
@@ -220,6 +220,14 @@ class MapsRepository {
         map!!.clear()
         map = null
         finishing(index, time)
+    }
+
+    override fun loadResult() {
+    }
+
+    override fun saveResult() {
+        Callback.Result.items = items
+        Callback.Result.temp = temp
     }
 
 }

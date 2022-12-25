@@ -1,7 +1,6 @@
 package com.kdan.benchmarks.ui
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -21,8 +20,6 @@ import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
 import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.MapsViewModel
-import java.util.*
-import kotlin.concurrent.timerTask
 
 class MapsFragment : Fragment(), Callback {
 
@@ -31,9 +28,9 @@ class MapsFragment : Fragment(), Callback {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecycleViewAdapter
     private val viewModel: MapsViewModel by viewModels()
-    lateinit var mainHandler: Handler
-    var runnable: Runnable? = null
-    private val delay = 200
+    private lateinit var mainHandler: Handler
+    private var runnable: Runnable? = null
+    private val delay = 1000
     private lateinit var button: Button
 
     override fun onCreateView(
@@ -52,6 +49,7 @@ class MapsFragment : Fragment(), Callback {
         setupItemsInitialText()
         button = binding.buttonStartStop
         button.text = viewModel.buttonText[0]
+        adapter.submitList(viewModel.items)
         observe()
         return binding.root
     }
@@ -63,11 +61,8 @@ class MapsFragment : Fragment(), Callback {
         }
 
         button.setOnClickListener {
-            // setElementsAmount()
-            viewModel.start(requireContext())
-        }
-        viewModel.items.observe(viewLifecycleOwner) { items ->
-            adapter.submitList(items)
+            setElementsAmount()
+            viewModel.start()
         }
     }
 
@@ -75,30 +70,30 @@ class MapsFragment : Fragment(), Callback {
         button.text = viewModel.buttonText[0]
         mainHandler.postDelayed(Runnable {
             mainHandler.postDelayed(runnable!!, delay.toLong())
-            update()
+            if (Callback.Result.temp.isEmpty()) {
+                return@Runnable
+            }
+            loadResult()
         }.also { runnable = it }, delay.toLong())
         super.onResume()
     }
 
-    override fun onUpdate() {
-        updateCell()
+    override fun loadResult() {
+        viewModel.temp.addAll(Callback.Result.temp)
+        Callback.Result.temp.clear()
+        viewModel.temp.forEach {
+            viewModel.items[it] = Callback.Result.items[it]
+        }
+        button.text = viewModel.buttonText[0]
+        update()
+    }
+
+    override fun saveResult() {
     }
 
     private fun update() {
-        when {
-            viewModel.repository.isDone -> {
-                onUpdate()
-                viewModel.changeButtonName(true)
-                button.text = viewModel.buttonText[0]
-            }
-            viewModel.repository.isRunning -> {
-                onUpdate()
-                if (viewModel.repository.currentOperation == 0) {
-                    button.text = viewModel.buttonText[0]
-                }
-            }
-            else -> return
-        }
+        viewModel.temp.forEach { adapter.notifyItemChanged(it) }
+        viewModel.temp.clear()
     }
 
     override fun onPause() {
@@ -145,8 +140,8 @@ class MapsFragment : Fragment(), Callback {
     }
 
     private fun setupItemsInitialText() {
-        if (viewModel.items.value!!.first().initialText.isNotEmpty()) return
-        repeat(6) {
+        if (viewModel.items.first().initialText.isNotEmpty()) return
+        repeat(viewModel.items.size) {
             val text: String = when (it) {
                 0 -> getString(R.string.adding_new_tree_map)
                 1 -> getString(R.string.search_by_key_tree_map)
@@ -156,7 +151,7 @@ class MapsFragment : Fragment(), Callback {
                 5 -> getString(R.string.removing_hash_map)
                 else -> "Android got lost LOL"
             }
-            viewModel.items.value?.get(it)?.changeText(text, setInitialText = true)
+            viewModel.items[it].changeText(text, setInitialText = true)
         }
     }
 
@@ -173,16 +168,6 @@ class MapsFragment : Fragment(), Callback {
             list[it] = text
         }
         viewModel.buttonText = list
-    }
-
-    private fun updateCell() {
-        val temp = mutableSetOf<Int>()
-        temp.addAll(viewModel.repository.temp)
-        temp.forEach {
-            adapter.notifyItemChanged(it)
-            viewModel.repository.temp.remove(it)
-        }
-        temp.clear()
     }
 
 }

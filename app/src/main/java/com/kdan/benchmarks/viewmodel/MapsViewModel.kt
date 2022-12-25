@@ -1,8 +1,5 @@
 package com.kdan.benchmarks.viewmodel
 
-import android.content.Context
-import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kdan.benchmarks.repository.MapsRepository
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
@@ -10,26 +7,27 @@ import com.kdan.benchmarks.utility.Checker
 
 class MapsViewModel : ViewModel() {
 
-    val items = MutableLiveData<List<ItemData>>()
-    var collectionSize = 1000000
+    var items = mutableListOf<ItemData>()
+    var collectionSize = 0
     val tagCollectionSize = CollectionSizeDialogFragment().tagCollectionSize
-    var elementsAmount = 1000000
+    var elementsAmount = 0
     val tagElementsAmount = "elementsAmount"
-    val repository = MapsRepository()
+    private val repository = MapsRepository()
     var buttonText = mutableListOf<String>()
+    var temp = mutableSetOf<Int>()
 
     fun setupItems() {
-        if (items.value != null) return
+        if (items.isNotEmpty()) return
         val itemDataList = mutableListOf<ItemData>()
 
         repeat(6) {
             val data = ItemData(id = it)
             itemDataList.add(data)
         }
-        items.value = itemDataList
+        items = itemDataList
     }
 
-    fun start(context: Context) {
+    fun start() {
         if (repository.isRunning) {
             repository.currentOperation = -2
             return
@@ -44,14 +42,13 @@ class MapsViewModel : ViewModel() {
                         changeButtonName()
                         prepRep()
                         repository.startAll()
+                        changeButtonName(true)
                     }
             }.start()
             return
         }
-        Toast.makeText(context, "Wait the second, please:)", Toast.LENGTH_SHORT).show()
+        buttonText[0] = "Wait"
     }
-
-
 
     // prepare repository
     private fun prepRep() {
@@ -62,7 +59,7 @@ class MapsViewModel : ViewModel() {
         }
     }
 
-    fun changeButtonName(stop: Boolean = false) {
+    private fun changeButtonName(stop: Boolean = false) {
         if (stop) {
             buttonText[0] = buttonText[1] // text = start
         } else {
