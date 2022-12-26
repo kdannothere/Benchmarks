@@ -48,13 +48,8 @@ class MapsFragment : Fragment(), Callback {
         setupButtonText()
         setupItemsInitialText()
         button = binding.buttonStartStop
-        button.text = viewModel.buttonText[0]
         adapter.submitList(viewModel.items)
-        observe()
-        return binding.root
-    }
 
-    private fun observe() {
         setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
             val result = bundle.getInt(viewModel.tagCollectionSize)
             viewModel.collectionSize = result
@@ -64,18 +59,18 @@ class MapsFragment : Fragment(), Callback {
             setElementsAmount()
             viewModel.start()
         }
+        return binding.root
     }
 
     override fun onResume() {
+        super.onResume()
         button.text = viewModel.buttonText[0]
+        // call the Callback every second
         mainHandler.postDelayed(Runnable {
             mainHandler.postDelayed(runnable!!, delay.toLong())
-            if (Callback.Result.temp.isEmpty()) {
-                return@Runnable
-            }
+            if (Callback.Result.temp.isEmpty()) return@Runnable
             loadResult()
         }.also { runnable = it }, delay.toLong())
-        super.onResume()
     }
 
     override fun loadResult() {

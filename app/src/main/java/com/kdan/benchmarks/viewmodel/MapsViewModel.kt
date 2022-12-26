@@ -39,7 +39,7 @@ class MapsViewModel : ViewModel() {
                         Checker.checkElementsAmount(elementsAmount) &&
                         Checker.isGreaterOrEqual(collectionSize, elementsAmount)
                     ) {
-                        changeButtonName()
+                        changeButtonName(false)
                         prepRep()
                         repository.startAll()
                         changeButtonName(true)
@@ -59,12 +59,8 @@ class MapsViewModel : ViewModel() {
         }
     }
 
-    private fun changeButtonName(stop: Boolean = false) {
-        if (stop) {
-            buttonText[0] = buttonText[1] // text = start
-        } else {
-            buttonText[0] = buttonText[2] // text = stop
-        }
+    private fun changeButtonName(stop: Boolean) {
+        if (stop) buttonText[0] = buttonText[1] else buttonText[0] = buttonText[2]
     }
 
 }
