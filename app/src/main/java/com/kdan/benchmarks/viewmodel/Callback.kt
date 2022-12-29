@@ -1,11 +1,16 @@
 package com.kdan.benchmarks.viewmodel
 
 interface Callback {
-    fun loadResult()
-    fun saveResult()
+
+    interface SavingResult {
+        fun saveResult()
+    }
+
+    interface LoadingResult {
+        fun loadResult()
+    }
 
     object Result {
-        var items = mutableListOf<ItemData>()
-        var temp = mutableSetOf<Int>()
+        val temp = mutableSetOf<Int>()
     }
 }

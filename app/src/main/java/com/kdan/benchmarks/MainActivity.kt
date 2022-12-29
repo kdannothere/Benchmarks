@@ -23,7 +23,8 @@ class MainActivity : AppCompatActivity() {
             tab.text = if (index == 0) getString(R.string.tab_collections) else getString(R.string.tab_maps)
         }.attach()
         binding.floatingButton.setOnClickListener {
-            CollectionSizeDialogFragment().let { it.show(supportFragmentManager, it.tag) }
+            CollectionSizeDialogFragment()
+                .show(supportFragmentManager, CollectionSizeDialogFragment.tagCollectionSize)
         }
         setContentView(binding.root)
     }

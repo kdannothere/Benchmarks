@@ -4,7 +4,7 @@ import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
 
-class MapsRepository : Callback {
+class MapsRepository: Callback.SavingResult {
     var collectionSize: Int = 0
     var elementsAmount: Int = 0
     var items = mutableListOf<ItemData>()
@@ -12,7 +12,7 @@ class MapsRepository : Callback {
     var currentOperation = -1
     val isRunning get() = currentOperation >= 0
     var isDone = true
-    private var temp = mutableSetOf<Int>()
+    private val temp = mutableSetOf<Int>()
 
     fun startAll() {
         isDone = false
@@ -45,6 +45,10 @@ class MapsRepository : Callback {
     private fun stopping(index: Int) {
         items[index].changeBar(true)
         temp += index
+    }
+
+    override fun saveResult() {
+        Callback.Result.temp.addAll(temp)
     }
 
     private fun changeAllBars(stop: Boolean = false) {
@@ -220,14 +224,6 @@ class MapsRepository : Callback {
         map!!.clear()
         map = null
         finishing(index, time)
-    }
-
-    override fun loadResult() {
-    }
-
-    override fun saveResult() {
-        Callback.Result.items = items
-        Callback.Result.temp = temp
     }
 
 }

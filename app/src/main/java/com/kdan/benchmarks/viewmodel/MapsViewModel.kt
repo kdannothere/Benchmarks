@@ -4,17 +4,20 @@ import androidx.lifecycle.ViewModel
 import com.kdan.benchmarks.repository.MapsRepository
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
 import com.kdan.benchmarks.utility.Checker
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MapsViewModel : ViewModel() {
 
+    private val service: ExecutorService = Executors.newSingleThreadExecutor()
+    private val repository = MapsRepository()
     var items = mutableListOf<ItemData>()
     var collectionSize = 0
-    val tagCollectionSize = CollectionSizeDialogFragment().tagCollectionSize
+    val tagCollectionSize = CollectionSizeDialogFragment.tagCollectionSize
     var elementsAmount = 0
     val tagElementsAmount = "elementsAmount"
-    private val repository = MapsRepository()
     var buttonText = mutableListOf<String>()
-    var temp = mutableSetOf<Int>()
+    val temp = mutableSetOf<Int>()
 
     fun setupItems() {
         if (items.isNotEmpty()) return
@@ -33,6 +36,7 @@ class MapsViewModel : ViewModel() {
             return
         }
         if (repository.isDone) {
+            service.execute(
             Thread {
                     if (
                         Checker.checkCollectionSize(collectionSize) &&
@@ -44,7 +48,7 @@ class MapsViewModel : ViewModel() {
                         repository.startAll()
                         changeButtonName(true)
                     }
-            }.start()
+            })
             return
         }
         buttonText[0] = "Wait"

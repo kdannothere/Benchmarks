@@ -21,14 +21,14 @@ import com.kdan.benchmarks.databinding.FragmentMapsBinding
 import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.MapsViewModel
 
-class MapsFragment : Fragment(), Callback {
+class MapsFragment : Fragment(), Callback.LoadingResult {
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecycleViewAdapter
     private val viewModel: MapsViewModel by viewModels()
-    private lateinit var mainHandler: Handler
+    private lateinit var handler: Handler
     private var runnable: Runnable? = null
     private val delay = 1000
     private lateinit var button: Button
@@ -44,7 +44,7 @@ class MapsFragment : Fragment(), Callback {
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
-        mainHandler = Handler(Looper.getMainLooper())
+        handler = Handler(Looper.getMainLooper())
         setupButtonText()
         setupItemsInitialText()
         button = binding.buttonStartStop
@@ -66,39 +66,33 @@ class MapsFragment : Fragment(), Callback {
         super.onResume()
         button.text = viewModel.buttonText[0]
         // call the Callback every second
-        mainHandler.postDelayed(Runnable {
-            mainHandler.postDelayed(runnable!!, delay.toLong())
+        handler.postDelayed(Runnable {
+            handler.postDelayed(runnable!!, delay.toLong())
             if (Callback.Result.temp.isEmpty()) return@Runnable
             loadResult()
+            update()
+            button.text = viewModel.buttonText[0]
         }.also { runnable = it }, delay.toLong())
-    }
-
-    override fun loadResult() {
-        viewModel.temp.addAll(Callback.Result.temp)
-        Callback.Result.temp.clear()
-        viewModel.temp.forEach {
-            viewModel.items[it] = Callback.Result.items[it]
-        }
-        button.text = viewModel.buttonText[0]
-        update()
-    }
-
-    override fun saveResult() {
-    }
-
-    private fun update() {
-        viewModel.temp.forEach { adapter.notifyItemChanged(it) }
-        viewModel.temp.clear()
     }
 
     override fun onPause() {
         super.onPause()
-        mainHandler.removeCallbacks(runnable!!)
+        handler.removeCallbacks(runnable!!)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun loadResult() {
+        viewModel.temp.addAll(Callback.Result.temp)
+        Callback.Result.temp.clear()
+    }
+
+    private fun update() {
+        viewModel.temp.forEach { adapter.notifyItemChanged(it) }
+        viewModel.temp.clear()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

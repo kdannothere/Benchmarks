@@ -15,7 +15,10 @@ class CollectionSizeDialogFragment : DialogFragment() {
 
     private var _binding: DialogFragmentCollectionSizeBinding? = null
     private val binding get() = _binding!!
-    val tagCollectionSize = "collectionSize"
+
+    companion object {
+        const val tagCollectionSize = "collectionSize"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
