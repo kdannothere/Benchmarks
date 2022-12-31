@@ -34,6 +34,10 @@ class MapsRepository: Callback.SavingResult {
         isDone = true
     }
 
+    override fun saveResult() {
+        Callback.Result.temp.addAll(temp)
+    }
+
     private fun finishing(index: Int, time: Int) {
         temp += index
         items[index].changeResult(newResult = time / elementsAmount)
@@ -45,10 +49,6 @@ class MapsRepository: Callback.SavingResult {
     private fun stopping(index: Int) {
         items[index].changeBar(true)
         temp += index
-    }
-
-    override fun saveResult() {
-        Callback.Result.temp.addAll(temp)
     }
 
     private fun changeAllBars(stop: Boolean = false) {

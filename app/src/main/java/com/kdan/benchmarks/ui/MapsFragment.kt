@@ -20,6 +20,7 @@ import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
 import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.MapsViewModel
+import kotlinx.coroutines.*
 
 class MapsFragment : Fragment(), Callback.LoadingResult {
 
@@ -29,8 +30,6 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
     private lateinit var adapter: RecycleViewAdapter
     private val viewModel: MapsViewModel by viewModels()
     private lateinit var handler: Handler
-    private var runnable: Runnable? = null
-    private val delay = 1000
     private lateinit var button: Button
 
     override fun onCreateView(
@@ -45,7 +44,7 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
         handler = Handler(Looper.getMainLooper())
-        setupButtonText()
+        setupButtonTextList()
         setupItemsInitialText()
         button = binding.buttonStartStop
         adapter.submitList(viewModel.items)
@@ -53,6 +52,10 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
         setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
             val result = bundle.getInt(viewModel.tagCollectionSize)
             viewModel.collectionSize = result
+        }
+
+        viewModel.buttonText.observe(viewLifecycleOwner) {
+            button.text = it
         }
 
         button.setOnClickListener {
@@ -64,20 +67,18 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
 
     override fun onResume() {
         super.onResume()
-        button.text = viewModel.buttonText[0]
         // call the Callback every second
         handler.postDelayed(Runnable {
-            handler.postDelayed(runnable!!, delay.toLong())
+            handler.postDelayed(viewModel.runnable!!, viewModel.delay.toLong())
             if (Callback.Result.temp.isEmpty()) return@Runnable
             loadResult()
             update()
-            button.text = viewModel.buttonText[0]
-        }.also { runnable = it }, delay.toLong())
+        }.also { viewModel.runnable = it }, viewModel.delay.toLong())
     }
 
     override fun onPause() {
         super.onPause()
-        handler.removeCallbacks(runnable!!)
+        handler.removeCallbacks(viewModel.runnable!!)
     }
 
     override fun onDestroyView() {
@@ -119,11 +120,15 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
 
     private fun setElementsAmount() {
         val input = binding.textInputElementsAmount.text.toString()
-        if (input.isNotBlank()) {
-            viewModel.elementsAmount = input.toInt()
-        } else {
-            val activity = requireActivity() as MainActivity
-            activity.binding.floatingButton.performClick()
+        when {
+            input.isNotBlank() -> viewModel.elementsAmount = input.toInt()
+            input.isBlank() -> {
+                viewModel.elementsAmount = 0 // test
+                if (viewModel.collectionSize == 0) {  // Feature: call dialog
+                    val activity = requireActivity() as MainActivity
+                    activity.binding.floatingButton.performClick()
+                }
+            }
         }
         hideKeyboardFrom(requireContext(), button)
     }
@@ -144,19 +149,11 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
         }
     }
 
-    private fun setupButtonText() {
-        if (viewModel.buttonText.isNotEmpty()) return
-        val list = MutableList(3) { "" }
-        repeat(3) {
-            val text: String = when (it) {
-                0 -> getString(R.string.button_start)
-                1 -> getString(R.string.button_start)
-                2 -> getString(R.string.button_stop)
-                else -> "Android got lost LOL"
-            }
-            list[it] = text
-        }
-        viewModel.buttonText = list
+    private fun setupButtonTextList() {
+        if (viewModel.buttonTextList.isNotEmpty()) return
+        viewModel.buttonTextList.add(getString(R.string.button_start))
+        viewModel.buttonTextList.add(getString(R.string.button_stop))
+        viewModel.buttonText.postValue(viewModel.buttonTextList.first())
     }
 
 }

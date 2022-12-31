@@ -1,5 +1,6 @@
 package com.kdan.benchmarks.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kdan.benchmarks.repository.MapsRepository
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
@@ -12,12 +13,15 @@ class MapsViewModel : ViewModel() {
     private val service: ExecutorService = Executors.newSingleThreadExecutor()
     private val repository = MapsRepository()
     var items = mutableListOf<ItemData>()
-    var collectionSize = 0
+    var collectionSize = 10000 // test
     val tagCollectionSize = CollectionSizeDialogFragment.tagCollectionSize
-    var elementsAmount = 0
+    var elementsAmount = 10000 // test
     val tagElementsAmount = "elementsAmount"
-    var buttonText = mutableListOf<String>()
+    val buttonTextList = mutableListOf<String>()
+    val buttonText = MutableLiveData<String>()
     val temp = mutableSetOf<Int>()
+    var runnable: Runnable? = null
+    val delay = 1000
 
     fun setupItems() {
         if (items.isNotEmpty()) return
@@ -35,23 +39,23 @@ class MapsViewModel : ViewModel() {
             repository.currentOperation = -2
             return
         }
+
         if (repository.isDone) {
             service.execute(
-            Thread {
-                    if (
-                        Checker.checkCollectionSize(collectionSize) &&
-                        Checker.checkElementsAmount(elementsAmount) &&
-                        Checker.isGreaterOrEqual(collectionSize, elementsAmount)
-                    ) {
-                        changeButtonName(false)
-                        prepRep()
-                        repository.startAll()
-                        changeButtonName(true)
-                    }
-            })
-            return
+                Thread {
+                        if (
+                            Checker.checkCollectionSize(collectionSize) &&
+                            Checker.checkElementsAmount(elementsAmount) &&
+                            Checker.isGreaterOrEqual(collectionSize, elementsAmount)
+                        ) {
+                            changeButtonName(false)
+                            prepRep()
+                            repository.startAll()
+                            changeButtonName(true)
+                        }
+                }
+            )
         }
-        buttonText[0] = "Wait"
     }
 
     // prepare repository
@@ -64,7 +68,10 @@ class MapsViewModel : ViewModel() {
     }
 
     private fun changeButtonName(stop: Boolean) {
-        if (stop) buttonText[0] = buttonText[1] else buttonText[0] = buttonText[2]
+        when (stop) {
+            true -> buttonText.postValue(buttonTextList.first()) // start
+            false -> buttonText.postValue(buttonTextList.last()) // stop
+        }
     }
 
 }
