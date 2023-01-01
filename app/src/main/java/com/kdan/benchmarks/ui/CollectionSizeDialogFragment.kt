@@ -9,7 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import com.kdan.benchmarks.databinding.DialogFragmentCollectionSizeBinding
-import com.kdan.benchmarks.utility.Checker
+import com.kdan.benchmarks.utility.Utility
 
 class CollectionSizeDialogFragment : DialogFragment() {
 
@@ -36,7 +36,7 @@ class CollectionSizeDialogFragment : DialogFragment() {
 
     private fun takeData() {
         val input = binding.textInputCollectionSize.text.toString().toIntOrNull()
-        if (input == null || !Checker.checkCollectionSize(input)) {
+        if (input == null || !Utility.checkCollectionSize(input)) {
             Toast.makeText(this.context, "Error. Try another number.", Toast.LENGTH_LONG).show()
             return
         }

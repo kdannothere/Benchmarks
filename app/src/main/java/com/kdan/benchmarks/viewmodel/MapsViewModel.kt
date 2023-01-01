@@ -1,18 +1,17 @@
 package com.kdan.benchmarks.viewmodel
 
-import android.os.Looper
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kdan.benchmarks.R
 import com.kdan.benchmarks.repository.MapsRepository
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
-import com.kdan.benchmarks.utility.Checker
-import java.lang.System.gc
+import com.kdan.benchmarks.utility.Utility
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
-class MapsViewModel : ViewModel() {
+class MapsViewModel : ViewModel(), Callback.LoadingResult {
 
     private val service: ExecutorService = Executors.newSingleThreadExecutor()
     private val repository = MapsRepository()
@@ -21,11 +20,11 @@ class MapsViewModel : ViewModel() {
     val tagCollectionSize = CollectionSizeDialogFragment.tagCollectionSize
     var elementsAmount = 1000000 // test
     val tagElementsAmount = "elementsAmount"
-    val buttonTextList = mutableListOf<String>()
+    private val buttonTextList = mutableListOf<String>()
     val buttonText = MutableLiveData<String>()
     val temp = mutableSetOf<Int>()
-    var runnableMain: Runnable? = null
-    val delay = 1000
+    var tempThread: Runnable? = null
+    val delay = 1000L
 
     fun setupItems() {
         if (items.isNotEmpty()) return
@@ -45,9 +44,9 @@ class MapsViewModel : ViewModel() {
             Thread {
                 Log.d("SHOW", "start")
                 if (
-                    Checker.checkCollectionSize(collectionSize) &&
-                    Checker.checkElementsAmount(elementsAmount) &&
-                    Checker.isGreaterOrEqual(collectionSize, elementsAmount)
+                    Utility.checkCollectionSize(collectionSize) &&
+                    Utility.checkElementsAmount(elementsAmount) &&
+                    Utility.isGreaterOrEqual(collectionSize, elementsAmount)
                 ) {
                     changeButtonName(false)
                     prepRep()
@@ -72,6 +71,34 @@ class MapsViewModel : ViewModel() {
             true -> buttonText.postValue(buttonTextList.first()) // start
             false -> buttonText.postValue(buttonTextList.last()) // stop
         }
+    }
+
+    override fun loadResult() {
+        temp.addAll(Callback.Result.temp)
+        Callback.Result.temp.clear()
+    }
+
+    fun setupItemsInitialText(context: Context) {
+        if (items.first().initialText.isNotEmpty()) return
+        repeat(items.size) {
+            val text: String = when (it) {
+                0 -> context.getString(R.string.adding_new_tree_map)
+                1 -> context.getString(R.string.search_by_key_tree_map)
+                2 -> context.getString(R.string.removing_tree_map)
+                3 -> context.getString(R.string.adding_new_hash_map)
+                4 -> context.getString(R.string.search_by_key_hash_map)
+                5 -> context.getString(R.string.removing_hash_map)
+                else -> "Android got lost LOL"
+            }
+            items[it].changeText(text, setInitialText = true)
+        }
+    }
+
+    fun setupButtonTextList(context: Context) {
+        if (buttonTextList.isNotEmpty()) return
+        buttonTextList.add(context.getString(R.string.button_start))
+        buttonTextList.add(context.getString(R.string.button_stop))
+        buttonText.postValue(buttonTextList.first())
     }
 
 }

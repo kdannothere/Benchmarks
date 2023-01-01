@@ -16,13 +16,12 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.MainActivity
-import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
+import com.kdan.benchmarks.utility.Utility
 import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.MapsViewModel
-import kotlinx.coroutines.*
 
-class MapsFragment : Fragment(), Callback.LoadingResult {
+class MapsFragment : Fragment() {
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
@@ -44,8 +43,8 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
         handler = Handler(Looper.getMainLooper())
-        setupButtonTextList()
-        setupItemsInitialText()
+        viewModel.setupButtonTextList(requireContext())
+        viewModel.setupItemsInitialText(requireContext())
         button = binding.buttonStartStop
         adapter.submitList(viewModel.items)
 
@@ -69,26 +68,21 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
         super.onResume()
         // call the Callback every second
         handler.postDelayed(Runnable {
-            handler.postDelayed(viewModel.runnableMain!!, viewModel.delay.toLong())
+            handler.postDelayed(viewModel.tempThread!!, viewModel.delay)
             if (Callback.Result.temp.isEmpty()) return@Runnable
-            loadResult()
+            viewModel.loadResult()
             update()
-        }.also { viewModel.runnableMain = it }, viewModel.delay.toLong())
+        }.also { viewModel.tempThread = it }, viewModel.delay)
     }
 
     override fun onPause() {
         super.onPause()
-        handler.removeCallbacks(viewModel.runnableMain!!)
+        handler.removeCallbacks(viewModel.tempThread!!)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun loadResult() {
-        viewModel.temp.addAll(Callback.Result.temp)
-        Callback.Result.temp.clear()
     }
 
     private fun update() {
@@ -112,12 +106,6 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
         if (savedElementsAmount != "null") viewModel.elementsAmount = savedElementsAmount.toInt()
     }
 
-    private fun hideKeyboardFrom(context: Context, view: View) {
-        val imm: InputMethodManager =
-            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-
     private fun setElementsAmount() {
         val input = binding.textInputElementsAmount.text.toString()
         when {
@@ -130,30 +118,7 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
                 }
             }
         }
-        hideKeyboardFrom(requireContext(), button)
-    }
-
-    private fun setupItemsInitialText() {
-        if (viewModel.items.first().initialText.isNotEmpty()) return
-        repeat(viewModel.items.size) {
-            val text: String = when (it) {
-                0 -> getString(R.string.adding_new_tree_map)
-                1 -> getString(R.string.search_by_key_tree_map)
-                2 -> getString(R.string.removing_tree_map)
-                3 -> getString(R.string.adding_new_hash_map)
-                4 -> getString(R.string.search_by_key_hash_map)
-                5 -> getString(R.string.removing_hash_map)
-                else -> "Android got lost LOL"
-            }
-            viewModel.items[it].changeText(text, setInitialText = true)
-        }
-    }
-
-    private fun setupButtonTextList() {
-        if (viewModel.buttonTextList.isNotEmpty()) return
-        viewModel.buttonTextList.add(getString(R.string.button_start))
-        viewModel.buttonTextList.add(getString(R.string.button_stop))
-        viewModel.buttonText.postValue(viewModel.buttonTextList.first())
+        Utility.hideKeyboard(requireContext(), button)
     }
 
 }
