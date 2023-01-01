@@ -1,25 +1,29 @@
 package com.kdan.benchmarks.repository
 
+import android.util.Log
 import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
 
-class MapsRepository: Callback.SavingResult {
+class MapsRepository : Callback.SavingResult {
     var collectionSize: Int = 0
     var elementsAmount: Int = 0
-    var items = mutableListOf<ItemData>()
+    lateinit var items: MutableList<ItemData>
     private val itemsAmount by lazy { items.size }
-    var currentOperation = -1
-    val isRunning get() = currentOperation >= 0
-    var isDone = true
+    var isRunning = false
+    var isStopped = true
     private val temp = mutableSetOf<Int>()
 
     fun startAll() {
-        isDone = false
-        currentOperation = 0
+        isRunning = true
+        isStopped = false
         changeAllBars()
-        saveResult()
         repeat(itemsAmount) {
+            if (!isRunning) {
+                changeAllBars(true)
+                isStopped = true
+                return
+            }
             when (it) {
                 0 -> addingTreeMap(it)
                 1 -> searchingTreeMap(it)
@@ -29,9 +33,8 @@ class MapsRepository: Callback.SavingResult {
                 5 -> removingHashMap(it)
             }
         }
-        saveResult()
-        currentOperation = -1
-        isDone = true
+        isRunning = false
+        isStopped = true
     }
 
     override fun saveResult() {
@@ -46,15 +49,15 @@ class MapsRepository: Callback.SavingResult {
         saveResult()
     }
 
-    private fun stopping(index: Int) {
-        items[index].changeBar(true)
+    private fun changeBar(index: Int, stop: Boolean = false) {
+        items[index].changeBar(stop)
         temp += index
+        saveResult()
     }
 
     private fun changeAllBars(stop: Boolean = false) {
         repeat(itemsAmount) {
-            items[it].changeBar(stop)
-            temp += it
+            changeBar(it, stop)
         }
     }
 
@@ -75,45 +78,39 @@ class MapsRepository: Callback.SavingResult {
     }
 
     private fun addingTreeMap(index: Int) {
-        if (!isRunning) {
-            stopping(index)
-            return
-        }
-        currentOperation = index
         var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
         var newKey = map!!.size + 1
         repeat(elementsAmount) {
             if (!isRunning) {
+                changeBar(index, true)
                 map!!.clear()
-                stopping(index)
+                map = null
                 return
             }
+            if (it % 100000 == 0) Log.d("SHOW", it.toString())
             val starting = System.currentTimeMillis()
             map!![newKey] = 0
             val ending = System.currentTimeMillis()
             time += (ending - starting).toInt()
             ++newKey
         }
-        map.clear()
+        map!!.clear()
         map = null
         finishing(index, time)
     }
 
     private fun searchingTreeMap(index: Int) {
-        if (!isRunning) {
-            stopping(index)
-            return
-        }
-        currentOperation = index
         var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
         repeat(elementsAmount) {
             if (!isRunning) {
+                changeBar(index, true)
                 map!!.clear()
-                stopping(index)
+                map = null
                 return
             }
+            if (it % 100000 == 0) Log.d("SHOW", it.toString())
             val starting = System.currentTimeMillis()
             map!!.containsKey(0)
             val ending = System.currentTimeMillis()
@@ -125,18 +122,14 @@ class MapsRepository: Callback.SavingResult {
     }
 
     private fun removingTreeMap(index: Int) {
-        if (!isRunning) {
-            stopping(index)
-            return
-        }
-        currentOperation = index
         var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
         var key = 0
         repeat(elementsAmount) {
             if (!isRunning) {
+                changeBar(index, true)
                 map!!.clear()
-                stopping(index)
+                map = null
                 return
             }
             val starting = System.currentTimeMillis()
@@ -151,18 +144,14 @@ class MapsRepository: Callback.SavingResult {
     }
 
     private fun addingHashMap(index: Int) {
-        if (!isRunning) {
-            stopping(index)
-            return
-        }
-        currentOperation = index
         var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
         var newKey = map!!.size + 1
         repeat(elementsAmount) {
             if (!isRunning) {
+                changeBar(index, true)
                 map!!.clear()
-                stopping(index)
+                map = null
                 return
             }
             val starting = System.currentTimeMillis()
@@ -171,23 +160,19 @@ class MapsRepository: Callback.SavingResult {
             time += (ending - starting).toInt()
             ++newKey
         }
-        map.clear()
+        map!!.clear()
         map = null
         finishing(index, time)
     }
 
     private fun searchingHashMap(index: Int) {
-        if (!isRunning) {
-            stopping(index)
-            return
-        }
-        currentOperation = index
         var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
         repeat(elementsAmount) {
             if (!isRunning) {
+                changeBar(index, true)
                 map!!.clear()
-                stopping(index)
+                map = null
                 return
             }
             val starting = System.currentTimeMillis()
@@ -201,18 +186,14 @@ class MapsRepository: Callback.SavingResult {
     }
 
     private fun removingHashMap(index: Int) {
-        if (!isRunning) {
-            stopping(index)
-            return
-        }
-        currentOperation = index
         var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
         var key = 0
         repeat(elementsAmount) {
             if (!isRunning) {
+                changeBar(index, true)
                 map!!.clear()
-                stopping(index)
+                map = null
                 return
             }
             val starting = System.currentTimeMillis()

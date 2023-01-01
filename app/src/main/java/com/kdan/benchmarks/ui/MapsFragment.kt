@@ -69,16 +69,16 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
         super.onResume()
         // call the Callback every second
         handler.postDelayed(Runnable {
-            handler.postDelayed(viewModel.runnable!!, viewModel.delay.toLong())
+            handler.postDelayed(viewModel.runnableMain!!, viewModel.delay.toLong())
             if (Callback.Result.temp.isEmpty()) return@Runnable
             loadResult()
             update()
-        }.also { viewModel.runnable = it }, viewModel.delay.toLong())
+        }.also { viewModel.runnableMain = it }, viewModel.delay.toLong())
     }
 
     override fun onPause() {
         super.onPause()
-        handler.removeCallbacks(viewModel.runnable!!)
+        handler.removeCallbacks(viewModel.runnableMain!!)
     }
 
     override fun onDestroyView() {
@@ -123,7 +123,7 @@ class MapsFragment : Fragment(), Callback.LoadingResult {
         when {
             input.isNotBlank() -> viewModel.elementsAmount = input.toInt()
             input.isBlank() -> {
-                viewModel.elementsAmount = 0 // test
+                // viewModel.elementsAmount = 0 // test
                 if (viewModel.collectionSize == 0) {  // Feature: call dialog
                     val activity = requireActivity() as MainActivity
                     activity.binding.floatingButton.performClick()
