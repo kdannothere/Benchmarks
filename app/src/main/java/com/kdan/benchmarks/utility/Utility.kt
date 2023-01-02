@@ -7,7 +7,7 @@ import android.view.inputmethod.InputMethodManager
 
 object Utility {
 
-    private val correctRange = 10000..10000000 // test
+    private val correctRange = 1000000..10000000
 
     fun checkCollectionSize(collectionSize: Int): Boolean {
         return collectionSize in correctRange

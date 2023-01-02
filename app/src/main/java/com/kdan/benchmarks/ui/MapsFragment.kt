@@ -1,15 +1,11 @@
 package com.kdan.benchmarks.ui
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -29,7 +25,6 @@ class MapsFragment : Fragment() {
     private lateinit var adapter: RecycleViewAdapter
     private val viewModel: MapsViewModel by viewModels()
     private lateinit var handler: Handler
-    private lateinit var button: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,15 +32,15 @@ class MapsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         adapter = RecycleViewAdapter()
-        viewModel.setupItems()
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
+        if (binding.buttonStartStop.text.isBlank()) {
+            viewModel.setupButtonTextList(requireContext())
+            viewModel.setupItemsInitialText(requireContext())
+        }
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
         handler = Handler(Looper.getMainLooper())
-        viewModel.setupButtonTextList(requireContext())
-        viewModel.setupItemsInitialText(requireContext())
-        button = binding.buttonStartStop
         adapter.submitList(viewModel.items)
 
         setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
@@ -54,10 +49,10 @@ class MapsFragment : Fragment() {
         }
 
         viewModel.buttonText.observe(viewLifecycleOwner) {
-            button.text = it
+            binding.buttonStartStop.text = it
         }
 
-        button.setOnClickListener {
+        binding.buttonStartStop.setOnClickListener {
             setElementsAmount()
             viewModel.start()
         }
@@ -111,14 +106,14 @@ class MapsFragment : Fragment() {
         when {
             input.isNotBlank() -> viewModel.elementsAmount = input.toInt()
             input.isBlank() -> {
-                // viewModel.elementsAmount = 0 // test
+                viewModel.elementsAmount = 0
                 if (viewModel.collectionSize == 0) {  // Feature: call dialog
                     val activity = requireActivity() as MainActivity
                     activity.binding.floatingButton.performClick()
                 }
             }
         }
-        Utility.hideKeyboard(requireContext(), button)
+        Utility.hideKeyboard(requireContext(), binding.buttonStartStop)
     }
 
 }

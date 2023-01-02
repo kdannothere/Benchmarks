@@ -13,12 +13,12 @@ import java.util.concurrent.Executors
 
 class MapsViewModel : ViewModel(), Callback.LoadingResult {
 
-    private val service: ExecutorService = Executors.newSingleThreadExecutor()
     private val repository = MapsRepository()
+    private val service: ExecutorService = Executors.newSingleThreadExecutor()
     var items = mutableListOf<ItemData>()
-    var collectionSize = 1000000 // test
+    var collectionSize = 0
     val tagCollectionSize = CollectionSizeDialogFragment.tagCollectionSize
-    var elementsAmount = 1000000 // test
+    var elementsAmount = 0
     val tagElementsAmount = "elementsAmount"
     private val buttonTextList = mutableListOf<String>()
     val buttonText = MutableLiveData<String>()
@@ -26,10 +26,9 @@ class MapsViewModel : ViewModel(), Callback.LoadingResult {
     var tempThread: Runnable? = null
     val delay = 1000L
 
-    fun setupItems() {
-        if (items.isNotEmpty()) return
-        repeat(6) { items += ItemData(id = it) }
-    }
+    init { setupItems() }
+
+    private fun setupItems() = repeat(6) { items += ItemData(id = it) }
 
     fun start() {
         if (repository.isRunning) {
@@ -79,7 +78,6 @@ class MapsViewModel : ViewModel(), Callback.LoadingResult {
     }
 
     fun setupItemsInitialText(context: Context) {
-        if (items.first().initialText.isNotEmpty()) return
         repeat(items.size) {
             val text: String = when (it) {
                 0 -> context.getString(R.string.adding_new_tree_map)
@@ -95,7 +93,6 @@ class MapsViewModel : ViewModel(), Callback.LoadingResult {
     }
 
     fun setupButtonTextList(context: Context) {
-        if (buttonTextList.isNotEmpty()) return
         buttonTextList.add(context.getString(R.string.button_start))
         buttonTextList.add(context.getString(R.string.button_stop))
         buttonText.postValue(buttonTextList.first())
