@@ -22,7 +22,7 @@ class MapsViewModel : ViewModel(), Callback.LoadingResult {
     val tagElementsAmount = "elementsAmount"
     private val buttonTextList = mutableListOf<String>()
     val buttonText = MutableLiveData<String>()
-    val temp = mutableSetOf<Int>()
+    val positions = mutableSetOf<Int>()
     var tempThread: Runnable? = null
     val delay = 1000L
 
@@ -73,8 +73,8 @@ class MapsViewModel : ViewModel(), Callback.LoadingResult {
     }
 
     override fun loadResult() {
-        temp.addAll(Callback.Result.temp)
-        Callback.Result.temp.clear()
+        positions.addAll(Callback.Result.positionsMaps)
+        Callback.Result.positionsMaps.clear()
     }
 
     fun setupItemsInitialText(context: Context) {

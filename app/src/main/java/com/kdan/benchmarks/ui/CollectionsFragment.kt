@@ -1,31 +1,31 @@
 package com.kdan.benchmarks.ui
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.MainActivity
-import com.kdan.benchmarks.R
-import com.kdan.benchmarks.databinding.FragmentMapsBinding
+import com.kdan.benchmarks.databinding.FragmentCollectionsBinding
+import com.kdan.benchmarks.utility.Utility
+import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.CollectionsViewModel
 
 class CollectionsFragment : Fragment() {
 
-    private var _binding: FragmentMapsBinding? = null
+    private var _binding: FragmentCollectionsBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecycleViewAdapter
     private val viewModel: CollectionsViewModel by viewModels()
-    private lateinit var button: Button
+    private lateinit var handler: Handler
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,32 +33,60 @@ class CollectionsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         adapter = RecycleViewAdapter()
-        viewModel.setupItems()
-        _binding = FragmentMapsBinding.inflate(inflater, container, false)
+        _binding = FragmentCollectionsBinding.inflate(inflater, container, false)
+        if (viewModel.needSetup) {
+            viewModel.setupButtonTextList(requireContext())
+            viewModel.setupItems()
+            viewModel.setupItemsInitialText(requireContext())
+            viewModel.needSetup = false
+        }
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
-        viewModel.updateButtonText(setupButtonText())
-        setInitialText()
-        button = binding.buttonStartStop
-        observe()
+        handler = Handler(Looper.getMainLooper())
+        adapter.submitList(viewModel.items)
 
         setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
             val result = bundle.getInt(viewModel.tagCollectionSize)
             viewModel.collectionSize = result
         }
 
-        button.setOnClickListener {
+        viewModel.buttonText.observe(viewLifecycleOwner) {
+            binding.buttonStartStop.text = it
+        }
+
+        binding.buttonStartStop.setOnClickListener {
             setElementsAmount()
             viewModel.start()
         }
-
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // call the Callback every second
+        handler.postDelayed(Runnable {
+            handler.postDelayed(viewModel.tempThread!!, viewModel.delay)
+            if (Callback.Result.positionsCollections.isEmpty()) return@Runnable
+            viewModel.loadResult()
+            update()
+        }.also { viewModel.tempThread = it
+               }, viewModel.delay)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(viewModel.tempThread!!)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun update() {
+        viewModel.positions.forEach { adapter.notifyItemChanged(it) }
+        viewModel.positions.clear()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -77,96 +105,19 @@ class CollectionsFragment : Fragment() {
         if (savedElementsAmount != "null") viewModel.elementsAmount = savedElementsAmount.toInt()
     }
 
-    private fun hideKeyboardFrom(context: Context, view: View) {
-        val imm: InputMethodManager =
-            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-
     private fun setElementsAmount() {
         val input = binding.textInputElementsAmount.text.toString()
-        if (input.isNotBlank()) {
-            viewModel.elementsAmount = input.toInt()
-        } else {
-            val activity = this.requireActivity() as MainActivity
-            activity.binding.floatingButton.performClick()
-        }
-        hideKeyboardFrom(requireContext(), button)
-    }
-
-    private fun setInitialText() {
-        if (viewModel.items.value!!.first().initialText.isNotEmpty()) return
-        repeat(21) {
-            val text: String = when (it) {
-                0 -> getString(R.string.adding_beginning_array_list)
-                1 -> getString(R.string.adding_middle_array_list)
-                2 -> getString(R.string.adding_end_array_list)
-                3 -> getString(R.string.search_by_value_array_list)
-                4 -> getString(R.string.removing_beginning_array_list)
-                5 -> getString(R.string.removing_middle_array_list)
-                6 -> getString(R.string.removing_end_array_list)
-                7 -> getString(R.string.adding_beginning_linked_list)
-                8 -> getString(R.string.adding_middle_linked_list)
-                9 -> getString(R.string.adding_end_linked_list)
-                10 -> getString(R.string.search_by_value_linked_list)
-                11 -> getString(R.string.removing_beginning_linked_list)
-                12 -> getString(R.string.removing_middle_linked_list)
-                13 -> getString(R.string.removing_end_linked_list)
-                14 -> getString(R.string.adding_beginning_copy_on_write_array_list)
-                15 -> getString(R.string.adding_middle_copy_on_write_array_list)
-                16 -> getString(R.string.adding_end_copy_on_write_array_list)
-                17 -> getString(R.string.search_by_value_copy_on_write_array_list)
-                18 -> getString(R.string.removing_beginning_copy_on_write_array_list)
-                19 -> getString(R.string.removing_middle_copy_on_write_array_list)
-                20 -> getString(R.string.removing_end_copy_on_write_array_list)
-                else -> "Android got lost LOL"
-            }
-            viewModel.items.value?.get(it)?.changeText(text, setInitialText = true)
-        }
-    }
-
-    private fun setupButtonText(): String {
-        val list = MutableList(3) { "" }
-        repeat(3) {
-            val text: String = when (it) {
-                0 -> getString(R.string.button_start)
-                1 -> getString(R.string.button_start)
-                2 -> getString(R.string.button_stop)
-                else -> "Android got lost LOL"
-            }
-            list[it] = text
-        }
-        viewModel.buttonText = list
-        return list.first()
-    }
-
-    private fun observe() {
-        viewModel.items.observe(viewLifecycleOwner) { items ->
-            adapter.submitList(items)
-        }
-
-        viewModel.updater.observe(viewLifecycleOwner) { updater ->
-            val temp = viewModel.repository.temp
-            when {
-                updater == true && viewModel.repository.currentOperation == -2 -> {
-                    adapter.notifyItemChanged(temp)
-                    if (temp == 20) viewModel.changeButtonName()
-                    viewModel.updater.value = false
-                }
-                updater == true -> {
-                    if (viewModel.repository.currentOperation == -1) {
-                        viewModel.changeButtonName()
-                    } else {
-                        adapter.notifyItemChanged(temp)
-                    }
-                    viewModel.updater.value = false
+        when {
+            input.isNotBlank() -> viewModel.elementsAmount = input.toInt()
+            input.isBlank() -> {
+                viewModel.elementsAmount = 0
+                if (viewModel.collectionSize == 0) {  // Feature: call dialog
+                    val activity = requireActivity() as MainActivity
+                    activity.binding.floatingButton.performClick()
                 }
             }
         }
-
-        viewModel.currentButtonText.observe(viewLifecycleOwner) {
-            button.text = viewModel.buttonText.first()
-        }
+        Utility.hideKeyboard(requireContext(), binding.buttonStartStop)
     }
 
 }

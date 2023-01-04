@@ -11,6 +11,7 @@ interface Callback {
     }
 
     object Result {
-        val temp = mutableSetOf<Int>()
+        val positionsMaps = mutableSetOf<Int>()
+        val positionsCollections = mutableSetOf<Int>()
     }
 }

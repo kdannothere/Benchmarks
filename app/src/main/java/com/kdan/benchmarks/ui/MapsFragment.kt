@@ -64,7 +64,7 @@ class MapsFragment : Fragment() {
         // call the Callback every second
         handler.postDelayed(Runnable {
             handler.postDelayed(viewModel.tempThread!!, viewModel.delay)
-            if (Callback.Result.temp.isEmpty()) return@Runnable
+            if (Callback.Result.positionsMaps.isEmpty()) return@Runnable
             viewModel.loadResult()
             update()
         }.also { viewModel.tempThread = it }, viewModel.delay)
@@ -81,8 +81,8 @@ class MapsFragment : Fragment() {
     }
 
     private fun update() {
-        viewModel.temp.forEach { adapter.notifyItemChanged(it) }
-        viewModel.temp.clear()
+        viewModel.positions.forEach { adapter.notifyItemChanged(it) }
+        viewModel.positions.clear()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

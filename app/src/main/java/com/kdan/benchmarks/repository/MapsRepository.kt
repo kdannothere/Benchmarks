@@ -9,16 +9,15 @@ class MapsRepository : Callback.SavingResult {
     var collectionSize: Int = 0
     var elementsAmount: Int = 0
     lateinit var items: MutableList<ItemData>
-    private val itemsAmount by lazy { items.size }
     var isRunning = false
     var isStopped = true
-    private val temp = mutableSetOf<Int>()
+    private val positions = mutableSetOf<Int>()
 
     fun startAll() {
         isRunning = true
         isStopped = false
         changeAllBars()
-        repeat(itemsAmount) {
+        repeat(items.size) {
             if (!isRunning) {
                 changeAllBars(true)
                 isStopped = true
@@ -38,11 +37,11 @@ class MapsRepository : Callback.SavingResult {
     }
 
     override fun saveResult() {
-        Callback.Result.temp.addAll(temp)
+        Callback.Result.positionsMaps.addAll(positions)
     }
 
     private fun finishing(index: Int, time: Int) {
-        temp += index
+        positions += index
         items[index].changeResult(newResult = time / elementsAmount)
         items[index].updateText()
         items[index].changeBar(true)
@@ -51,12 +50,12 @@ class MapsRepository : Callback.SavingResult {
 
     private fun changeBar(index: Int, stop: Boolean = false) {
         items[index].changeBar(stop)
-        temp += index
+        positions += index
         saveResult()
     }
 
     private fun changeAllBars(stop: Boolean = false) {
-        repeat(itemsAmount) {
+        repeat(items.size) {
             changeBar(it, stop)
         }
     }
@@ -83,7 +82,6 @@ class MapsRepository : Callback.SavingResult {
         var newKey = map!!.size + 1
         repeat(elementsAmount) {
             if (!isRunning) {
-                changeBar(index, true)
                 map!!.clear()
                 map = null
                 return
@@ -105,7 +103,6 @@ class MapsRepository : Callback.SavingResult {
         var time = 0
         repeat(elementsAmount) {
             if (!isRunning) {
-                changeBar(index, true)
                 map!!.clear()
                 map = null
                 return
@@ -127,7 +124,6 @@ class MapsRepository : Callback.SavingResult {
         var key = 0
         repeat(elementsAmount) {
             if (!isRunning) {
-                changeBar(index, true)
                 map!!.clear()
                 map = null
                 return
@@ -149,7 +145,6 @@ class MapsRepository : Callback.SavingResult {
         var newKey = map!!.size + 1
         repeat(elementsAmount) {
             if (!isRunning) {
-                changeBar(index, true)
                 map!!.clear()
                 map = null
                 return
@@ -170,7 +165,6 @@ class MapsRepository : Callback.SavingResult {
         var time = 0
         repeat(elementsAmount) {
             if (!isRunning) {
-                changeBar(index, true)
                 map!!.clear()
                 map = null
                 return
@@ -191,7 +185,6 @@ class MapsRepository : Callback.SavingResult {
         var key = 0
         repeat(elementsAmount) {
             if (!isRunning) {
-                changeBar(index, true)
                 map!!.clear()
                 map = null
                 return
