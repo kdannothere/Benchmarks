@@ -8,6 +8,9 @@
     <string name="text_input_elements_amount_hint">Elements amount</string>
     <string name="button_start">START</string>
     <string name="button_stop">STOP</string>
+    <string name="collection_size_wrong">Collections size should be from 1 million to 10 millions</string>
+    <string name="elements_amount_wrong">Elements amount should be from 1 million to 10 millions</string>
+    <string name="elements_amount_doesnt_suit">Elements amount should be at least 1 million and be not greater than collection size</string>
     <string name="check_range_elements_amount">The number should be from 1 million to 10 millions.</string>
     <string name="floating_button_description">Opens dialog to enter a collection size</string>
     <string name="adding_beginning_array_list">Adding in the beginning ArrayList</string>

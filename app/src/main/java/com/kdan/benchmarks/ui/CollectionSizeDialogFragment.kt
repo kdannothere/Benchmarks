@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+import com.kdan.benchmarks.R
 import com.kdan.benchmarks.databinding.DialogFragmentCollectionSizeBinding
 import com.kdan.benchmarks.utility.Utility
 
@@ -36,12 +37,12 @@ class CollectionSizeDialogFragment : DialogFragment() {
 
     private fun takeData() {
         val input = binding.textInputCollectionSize.text.toString().toIntOrNull()
-        if (input == null || !Utility.checkCollectionSize(input)) {
-            Toast.makeText(this.context, "Error. Try another number.", Toast.LENGTH_LONG).show()
+        if (input == null || !Utility.checkCollectionSize(collectionSize = input)) {
+            Utility.showToast(requireContext(), getString(R.string.collection_size_wrong))
             return
         }
         setFragmentResult(tagCollectionSize, bundleOf(tagCollectionSize to input))
-        this.dismiss()
+        dismiss()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

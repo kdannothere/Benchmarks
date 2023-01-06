@@ -1,4 +1,4 @@
-package com.kdan.benchmarks.ui
+package com.kdan.benchmarks.ui.adapters
 
 import androidx.recyclerview.widget.DiffUtil
 import com.kdan.benchmarks.viewmodel.ItemData

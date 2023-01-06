@@ -1,4 +1,8 @@
 package com.kdan.benchmarks.ui
 
-class BaseFragment {
+import androidx.fragment.app.Fragment
+
+open class BaseFragment : Fragment() {
+
+
 }

@@ -1,30 +1,35 @@
-package com.kdan.benchmarks.ui
+package com.kdan.benchmarks.ui.maps
 
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.MainActivity
-import com.kdan.benchmarks.databinding.FragmentCollectionsBinding
+import com.kdan.benchmarks.databinding.FragmentMapsBinding
+import com.kdan.benchmarks.ui.adapters.RecycleViewAdapter
 import com.kdan.benchmarks.utility.Utility
 import com.kdan.benchmarks.viewmodel.Callback
-import com.kdan.benchmarks.viewmodel.CollectionsViewModel
+import com.kdan.benchmarks.viewmodel.MapsViewModel
+import com.kdan.benchmarks.viewmodel.MyViewModelFactory
 
-class CollectionsFragment : Fragment() {
+class MapsFragment : Fragment() {
 
-    private var _binding: FragmentCollectionsBinding? = null
+    private lateinit var factory: MyViewModelFactory
+    private val viewModel: MapsViewModel by viewModels(
+        factoryProducer = { factory }
+    )
+
+    private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecycleViewAdapter
-    private val viewModel: CollectionsViewModel by viewModels()
     private lateinit var handler: Handler
 
     override fun onCreateView(
@@ -32,14 +37,14 @@ class CollectionsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+        _binding = FragmentMapsBinding.inflate(inflater, container, false)
+        factory = MyViewModelFactory(requireContext())
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         adapter = RecycleViewAdapter()
-        _binding = FragmentCollectionsBinding.inflate(inflater, container, false)
-        if (viewModel.needSetup) {
-            viewModel.setupButtonTextList(requireContext())
-            viewModel.setupItems()
-            viewModel.setupItemsInitialText(requireContext())
-            viewModel.needSetup = false
-        }
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this.context, 3)
         recyclerView.adapter = adapter
@@ -57,9 +62,8 @@ class CollectionsFragment : Fragment() {
 
         binding.buttonStartStop.setOnClickListener {
             setElementsAmount()
-            viewModel.start()
+            viewModel.checkAndStart(requireContext())
         }
-        return binding.root
     }
 
     override fun onResume() {
@@ -67,11 +71,10 @@ class CollectionsFragment : Fragment() {
         // call the Callback every second
         handler.postDelayed(Runnable {
             handler.postDelayed(viewModel.tempThread!!, viewModel.delay)
-            if (Callback.Result.positionsCollections.isEmpty()) return@Runnable
+            if (Callback.Result.positionsMaps.isEmpty()) return@Runnable
             viewModel.loadResult()
             update()
-        }.also { viewModel.tempThread = it
-               }, viewModel.delay)
+        }.also { viewModel.tempThread = it }, viewModel.delay)
     }
 
     override fun onPause() {

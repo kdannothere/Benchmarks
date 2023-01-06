@@ -1,4 +1,4 @@
-package com.kdan.benchmarks.ui
+package com.kdan.benchmarks.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

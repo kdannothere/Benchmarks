@@ -6,7 +6,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.kdan.benchmarks.databinding.ActivityMainBinding
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
-import com.kdan.benchmarks.ui.ViewPagerAdapter
+import com.kdan.benchmarks.ui.adapters.ViewPagerAdapter
 
 class MainActivity : AppCompatActivity() {
 

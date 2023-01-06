@@ -1,9 +1,11 @@
-package com.kdan.benchmarks.ui
+package com.kdan.benchmarks.ui.adapters
 
 import android.content.res.Resources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.kdan.benchmarks.ui.collections.CollectionsFragment
+import com.kdan.benchmarks.ui.maps.MapsFragment
 
 class ViewPagerAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {

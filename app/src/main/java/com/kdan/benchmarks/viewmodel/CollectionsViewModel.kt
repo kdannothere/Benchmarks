@@ -1,8 +1,6 @@
 package com.kdan.benchmarks.viewmodel
 
-
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kdan.benchmarks.R
@@ -12,7 +10,7 @@ import com.kdan.benchmarks.utility.Utility
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class CollectionsViewModel : ViewModel(), Callback.LoadingResult {
+class CollectionsViewModel(context: Context) : ViewModel(), Callback.LoadingResult {
 
     private val repository = CollectionsRepository()
     private val service: ExecutorService = Executors.newSingleThreadExecutor()
@@ -26,34 +24,43 @@ class CollectionsViewModel : ViewModel(), Callback.LoadingResult {
     val positions = mutableSetOf<Int>()
     var tempThread: Runnable? = null
     val delay = 1000L
-    var needSetup = true
 
-    fun setupItems() = repeat(21) { items += ItemData(id = it) }
+    init {
+        setupItems()
+        setupButtonTextList(context)
+        setupItemsInitialText(context)
+    }
 
-    fun start() {
+    private fun setupItems() = repeat(21) { items += ItemData(id = it) }
+
+    private fun start() {
         if (repository.isRunning) {
-            Log.d("SHOW", "stop")
             repository.isRunning = false
-            changeButtonName(true)
             return
         }
 
         if (!repository.isStopped) return
         service.execute(
             Thread {
-                Log.d("SHOW", "start")
-                if (
-                    Utility.checkCollectionSize(collectionSize) &&
-                    Utility.checkElementsAmount(elementsAmount) &&
-                    Utility.isGreaterOrEqual(collectionSize, elementsAmount)
-                ) {
                     changeButtonName(false)
                     prepRep()
                     repository.startAll()
                     changeButtonName(true)
-                }
             }
         )
+    }
+
+    fun checkAndStart(context: Context) {
+        if (Utility.checkNumbers(
+                context,
+                collectionSize,
+                elementsAmount)) {
+            // start if numbers are okay
+            start()
+        } else {
+            // stop execution just in case it's running
+            repository.isRunning = false
+        }
     }
 
     // prepare repository
@@ -77,7 +84,7 @@ class CollectionsViewModel : ViewModel(), Callback.LoadingResult {
         Callback.Result.positionsCollections.clear()
     }
 
-    fun setupItemsInitialText(context: Context) {
+    private fun setupItemsInitialText(context: Context) {
         repeat(items.size) {
             val text: String = when (it) {
                 0 -> context.getString(R.string.adding_beginning_array_list)
@@ -107,7 +114,7 @@ class CollectionsViewModel : ViewModel(), Callback.LoadingResult {
         }
     }
 
-    fun setupButtonTextList(context: Context) {
+    private fun setupButtonTextList(context: Context) {
         buttonTextList.add(context.getString(R.string.button_start))
         buttonTextList.add(context.getString(R.string.button_stop))
         buttonText.postValue(buttonTextList.first())
