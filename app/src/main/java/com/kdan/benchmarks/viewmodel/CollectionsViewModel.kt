@@ -10,7 +10,7 @@ import com.kdan.benchmarks.utility.Utility
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class CollectionsViewModel(context: Context) : ViewModel(), Callback.LoadingResult {
+class CollectionsViewModel : ViewModel(), Callback.LoadingResult {
 
     private val repository = CollectionsRepository()
     private val service: ExecutorService = Executors.newSingleThreadExecutor()
@@ -24,8 +24,10 @@ class CollectionsViewModel(context: Context) : ViewModel(), Callback.LoadingResu
     val positions = mutableSetOf<Int>()
     var tempThread: Runnable? = null
     val delay = 1000L
+    var firstLaunch = true
 
-    init {
+    fun initialSetup(context: Context) {
+        firstLaunch = false
         setupItems()
         setupButtonTextList(context)
         setupItemsInitialText(context)

@@ -3,50 +3,36 @@ package com.kdan.benchmarks.ui.maps
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.MainActivity
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
+import com.kdan.benchmarks.ui.BaseFragment
 import com.kdan.benchmarks.ui.adapters.RecycleViewAdapter
 import com.kdan.benchmarks.utility.Utility
 import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.MapsViewModel
-import com.kdan.benchmarks.viewmodel.MyViewModelFactory
 
-class MapsFragment : Fragment() {
+class MapsFragment : BaseFragment<FragmentMapsBinding>(
+    FragmentMapsBinding::inflate
+) {
 
-    private lateinit var factory: MyViewModelFactory
-    private val viewModel: MapsViewModel by viewModels(
+    val viewModel: MapsViewModel by viewModels(
         factoryProducer = { factory }
     )
-
-    private var _binding: FragmentMapsBinding? = null
-    private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecycleViewAdapter
     private lateinit var handler: Handler
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = FragmentMapsBinding.inflate(inflater, container, false)
-        factory = MyViewModelFactory(requireContext())
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (viewModel.firstLaunch) viewModel.initialSetup(requireContext())
         adapter = RecycleViewAdapter()
         recyclerView = binding.recyclerView
-        recyclerView.layoutManager = GridLayoutManager(this.context, 3)
+        recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         recyclerView.adapter = adapter
         handler = Handler(Looper.getMainLooper())
         adapter.submitList(viewModel.items)
@@ -80,11 +66,6 @@ class MapsFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(viewModel.tempThread!!)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun update() {
