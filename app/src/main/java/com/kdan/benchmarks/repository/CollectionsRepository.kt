@@ -122,6 +122,7 @@ class CollectionsRepository : Callback.SavingResult {
     }
 
     private fun addingMiddleArrayList(index: Int) {
+        Log.d("SHOW", "0")
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -130,6 +131,7 @@ class CollectionsRepository : Callback.SavingResult {
                 array = null
                 return
             }
+            if (it % 990000 == 0) Log.d("SHOW", it.toString())
             val starting = System.currentTimeMillis()
             array!!.add(array!!.size / 2, 1)
             val ending = System.currentTimeMillis()

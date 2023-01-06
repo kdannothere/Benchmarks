@@ -44,10 +44,10 @@ class CollectionsViewModel : ViewModel(), Callback.LoadingResult {
         if (!repository.isStopped) return
         service.execute(
             Thread {
-                    changeButtonName(false)
-                    prepRep()
-                    repository.startAll()
-                    changeButtonName(true)
+                changeButtonName(false)
+                prepRep()
+                repository.startAll()
+                changeButtonName(true)
             }
         )
     }
