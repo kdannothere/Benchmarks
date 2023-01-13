@@ -1,6 +1,5 @@
 package com.kdan.benchmarks.repository
 
-import android.util.Log
 import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
@@ -8,10 +7,10 @@ import java.util.TreeMap
 class MapsRepository : Callback.SavingResult {
     var collectionSize: Int = 0
     var elementsAmount: Int = 0
-    lateinit var items: MutableList<ItemData>
+    var items = mutableListOf<ItemData>()
     var isRunning = false
     var isStopped = true
-    private val positions = mutableSetOf<Int>()
+    val positions = mutableSetOf<Int>()
 
     fun startAll() {
         isRunning = true
@@ -60,7 +59,7 @@ class MapsRepository : Callback.SavingResult {
         }
     }
 
-    private fun createTreeMap(): TreeMap<Int, Byte> {
+    fun createTreeMap(): TreeMap<Int, Byte> {
         val treeMap = TreeMap<Int, Byte>()
         repeat(collectionSize) {
             treeMap[it] = 0
@@ -68,7 +67,7 @@ class MapsRepository : Callback.SavingResult {
         return treeMap
     }
 
-    private fun createHashMap(): HashMap<Int, Byte> {
+    fun createHashMap(): HashMap<Int, Byte> {
         val hashMap = HashMap<Int, Byte>()
         repeat(collectionSize) {
             hashMap[it] = 0
@@ -86,7 +85,6 @@ class MapsRepository : Callback.SavingResult {
                 map = null
                 return
             }
-            if (it % 100000 == 0) Log.d("SHOW", it.toString())
             val starting = System.currentTimeMillis()
             map!![newKey] = 0
             val ending = System.currentTimeMillis()
@@ -107,7 +105,6 @@ class MapsRepository : Callback.SavingResult {
                 map = null
                 return
             }
-            if (it % 100000 == 0) Log.d("SHOW", it.toString())
             val starting = System.currentTimeMillis()
             map!!.containsKey(0)
             val ending = System.currentTimeMillis()

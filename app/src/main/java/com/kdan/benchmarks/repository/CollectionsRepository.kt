@@ -1,6 +1,5 @@
 package com.kdan.benchmarks.repository
 
-import android.util.Log
 import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.*
@@ -13,7 +12,7 @@ class CollectionsRepository : Callback.SavingResult {
     lateinit var items: MutableList<ItemData>
     var isRunning = false
     var isStopped = true
-    private val positions = mutableSetOf<Int>()
+    val positions = mutableSetOf<Int>()
 
     fun startAll() {
         isRunning = true
@@ -77,7 +76,7 @@ class CollectionsRepository : Callback.SavingResult {
         }
     }
 
-    private fun createArrayList(): ArrayList<Byte> {
+    fun createArrayList(): ArrayList<Byte> {
         val arrayList = mutableListOf<Byte>()
         repeat(collectionSize) {
             arrayList += "0".toByte()
@@ -85,7 +84,7 @@ class CollectionsRepository : Callback.SavingResult {
         return arrayList.toCollection(arrayListOf())
     }
 
-    private fun createLinkedList(): LinkedList<Byte> {
+    fun createLinkedList(): LinkedList<Byte> {
         val linkedList = mutableListOf<Byte>()
         repeat(collectionSize) {
             linkedList += "0".toByte()
@@ -93,7 +92,7 @@ class CollectionsRepository : Callback.SavingResult {
         return linkedList.toCollection(LinkedList())
     }
 
-    private fun createCopyOnWriteArrayList(): CopyOnWriteArrayList<Byte> {
+    fun createCopyOnWriteArrayList(): CopyOnWriteArrayList<Byte> {
         val copyOnWriteArrayList = mutableListOf<Byte>()
         repeat(collectionSize) {
             copyOnWriteArrayList += "0".toByte()
@@ -118,11 +117,9 @@ class CollectionsRepository : Callback.SavingResult {
         array!!.clear()
         array = null
         finishing(index, time)
-        finishing(index, time)
     }
 
     private fun addingMiddleArrayList(index: Int) {
-        Log.d("SHOW", "0")
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -131,7 +128,6 @@ class CollectionsRepository : Callback.SavingResult {
                 array = null
                 return
             }
-            if (it % 990000 == 0) Log.d("SHOW", it.toString())
             val starting = System.currentTimeMillis()
             array!!.add(array!!.size / 2, 1)
             val ending = System.currentTimeMillis()
