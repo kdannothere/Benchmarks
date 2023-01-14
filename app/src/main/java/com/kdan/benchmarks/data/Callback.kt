@@ -1,4 +1,4 @@
-package com.kdan.benchmarks.viewmodel
+package com.kdan.benchmarks.data
 
 interface Callback {
 

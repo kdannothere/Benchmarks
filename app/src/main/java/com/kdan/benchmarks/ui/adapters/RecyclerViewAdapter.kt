@@ -3,7 +3,7 @@ package com.kdan.benchmarks.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import com.kdan.benchmarks.viewmodel.ItemData
+import com.kdan.benchmarks.data.ItemData
 import com.kdan.benchmarks.databinding.ItemViewBinding
 
 class RecycleViewAdapter

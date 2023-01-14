@@ -2,10 +2,10 @@ package com.kdan.benchmarks
 
 import com.kdan.benchmarks.repository.CollectionsRepository
 import com.kdan.benchmarks.repository.MapsRepository
-import com.kdan.benchmarks.viewmodel.Callback
-import com.kdan.benchmarks.viewmodel.CollectionsViewModel
-import com.kdan.benchmarks.viewmodel.ItemData
-import com.kdan.benchmarks.viewmodel.MapsViewModel
+import com.kdan.benchmarks.data.Callback
+import com.kdan.benchmarks.data.ItemData
+import com.kdan.benchmarks.ui.collections.CollsPresenter
+import com.kdan.benchmarks.ui.maps.MapsPresenter
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -16,9 +16,9 @@ const val ONE_MILLION = 1_000_000
 
 class UnitTest {
 
-    private val collVM = CollectionsViewModel()
+    private val collPres = CollsPresenter()
     private val collRep = CollectionsRepository()
-    private val mapsVM = MapsViewModel()
+    private val mapsPres = MapsPresenter()
     private val mapsRep = MapsRepository()
 
     @Test
@@ -64,8 +64,8 @@ class UnitTest {
             collRep.saveResult()
         }
         array.clear()
-        collVM.loadResult()
-        assertTrue(collVM.positions.contains(0))
+        collPres.loadResult()
+        assertTrue(collPres.positions.contains(0))
     }
 
     @Test
@@ -81,21 +81,21 @@ class UnitTest {
             mapsRep.saveResult()
         }
         map.clear()
-        mapsVM.loadResult()
-        assertTrue(mapsVM.positions.contains(1))
+        mapsPres.loadResult()
+        assertTrue(mapsPres.positions.contains(1))
     }
 
     private fun setupItems(indexOfTab: Int) { // is needed because of lateinit in repositories
         when (indexOfTab) {
             0 -> {
-                if (collVM.items.isNotEmpty()) return
-                repeat(21) { collVM.items += ItemData(id = it, initialText = "initialText") }
-                collRep.items = collVM.items
+                if (collPres.items.isNotEmpty()) return
+                repeat(21) { collPres.items += ItemData(id = it, initialText = "initialText") }
+                collRep.items = collPres.items
             }
             1 -> {
-                if (mapsVM.items.isNotEmpty()) return
-                repeat(6) { mapsVM.items += ItemData(id = it, initialText = "initialText") }
-                mapsRep.items = mapsVM.items
+                if (mapsPres.items.isNotEmpty()) return
+                repeat(6) { mapsPres.items += ItemData(id = it, initialText = "initialText") }
+                mapsRep.items = mapsPres.items
             }
             else -> throw Exception("No such fragment")
         }
@@ -108,16 +108,16 @@ class UnitTest {
     ) {
         when (indexOfTab) {
             0 -> {
-                collVM.collectionSize = collectionSize
-                collRep.collectionSize = collVM.collectionSize
-                collVM.elementsAmount = elementsAmount
-                collRep.elementsAmount = collVM.elementsAmount
+                collPres.collectionSize = collectionSize
+                collRep.collectionSize = collPres.collectionSize
+                collPres.elementsAmount = elementsAmount
+                collRep.elementsAmount = collPres.elementsAmount
             }
             1 -> {
-                mapsVM.collectionSize = collectionSize
-                mapsRep.collectionSize = mapsVM.collectionSize
-                mapsVM.elementsAmount = elementsAmount
-                mapsRep.elementsAmount = mapsVM.elementsAmount
+                mapsPres.collectionSize = collectionSize
+                mapsRep.collectionSize = mapsPres.collectionSize
+                mapsPres.elementsAmount = elementsAmount
+                mapsRep.elementsAmount = mapsPres.elementsAmount
             }
             else -> throw Exception("No such fragment")
         }
@@ -129,14 +129,14 @@ class UnitTest {
                 collRep.isRunning = false
                 collRep.isStopped = true
                 collRep.positions.clear()
-                collVM.positions.clear()
+                collPres.positions.clear()
                 Callback.Result.positionsCollections.clear()
             }
             1 -> {
                 mapsRep.isRunning = false
                 mapsRep.isStopped = true
                 mapsRep.positions.clear()
-                mapsVM.positions.clear()
+                mapsPres.positions.clear()
                 Callback.Result.positionsMaps.clear()
             }
             else -> throw Exception("No such fragment")

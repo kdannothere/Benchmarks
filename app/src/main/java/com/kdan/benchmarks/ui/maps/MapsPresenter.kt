@@ -1,17 +1,20 @@
-package com.kdan.benchmarks.viewmodel
+package com.kdan.benchmarks.ui.maps
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.kdan.benchmarks.MainActivity
 import com.kdan.benchmarks.R
 import com.kdan.benchmarks.repository.MapsRepository
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
 import com.kdan.benchmarks.utility.Utility
+import com.kdan.benchmarks.data.Callback
+import com.kdan.benchmarks.data.Contract
+import com.kdan.benchmarks.data.ItemData
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class MapsViewModel : ViewModel(), Callback.LoadingResult {
+class MapsPresenter : Callback.LoadingResult, Contract.Presenter {
 
+    private lateinit var fragment: MapsFragment
     private val repository = MapsRepository()
     private val service: ExecutorService = Executors.newSingleThreadExecutor()
     var items = mutableListOf<ItemData>()
@@ -26,11 +29,15 @@ class MapsViewModel : ViewModel(), Callback.LoadingResult {
     val delay = 1000L
     var firstLaunch = true
 
-    fun initialSetup(context: Context) {
+    fun setupFragment(fragment: MapsFragment) {
+        this.fragment = fragment
+    }
+
+    fun initialSetup() {
         firstLaunch = false
+        setupButtonTextList()
         setupItems()
-        setupButtonTextList(context)
-        setupItemsInitialText(context)
+        setupItemsInitialText()
     }
 
     private fun setupItems() = repeat(6) { items += ItemData(id = it) }
@@ -52,11 +59,12 @@ class MapsViewModel : ViewModel(), Callback.LoadingResult {
         )
     }
 
-    fun checkAndStart(context: Context) {
+    fun checkAndStart() {
         if (Utility.checkNumbers(
-                context,
+                fragment.requireContext(),
                 collectionSize,
-                elementsAmount)) {
+                elementsAmount)
+        ) {
             // start if numbers are okay
             start()
         } else {
@@ -82,29 +90,53 @@ class MapsViewModel : ViewModel(), Callback.LoadingResult {
     }
 
     override fun loadResult() {
-        positions.addAll(Callback.Result.positionsMaps)
-        Callback.Result.positionsMaps.clear()
+        positions.addAll(Callback.Result.positionsCollections)
+        Callback.Result.positionsCollections.clear()
     }
 
-    private fun setupItemsInitialText(context: Context) {
+    fun update() {
+        positions.forEach { fragment.adapter.notifyItemChanged(it) }
+        positions.clear()
+    }
+
+    fun setElementsAmount() {
+        val input = fragment.binding.textInputElementsAmount.text.toString()
+        when {
+            input.isNotBlank() -> elementsAmount = input.toInt()
+            input.isBlank() -> {
+                elementsAmount = 0
+                if (collectionSize == 0) {  // Feature: call dialog
+                    val activity = fragment.requireActivity() as MainActivity
+                    activity.binding.floatingButton.performClick()
+                }
+            }
+        }
+        Utility.hideKeyboard(fragment.requireContext(), fragment.binding.buttonStartStop)
+    }
+
+    private fun setupItemsInitialText() {
         repeat(items.size) {
             val text: String = when (it) {
-                0 -> context.getString(R.string.adding_new_tree_map)
-                1 -> context.getString(R.string.search_by_key_tree_map)
-                2 -> context.getString(R.string.removing_tree_map)
-                3 -> context.getString(R.string.adding_new_hash_map)
-                4 -> context.getString(R.string.search_by_key_hash_map)
-                5 -> context.getString(R.string.removing_hash_map)
+                0 -> fragment.getString(R.string.adding_new_tree_map)
+                1 -> fragment.getString(R.string.search_by_key_tree_map)
+                2 -> fragment.getString(R.string.removing_tree_map)
+                3 -> fragment.getString(R.string.adding_new_hash_map)
+                4 -> fragment.getString(R.string.search_by_key_hash_map)
+                5 -> fragment.getString(R.string.removing_hash_map)
                 else -> "Android got lost LOL"
             }
             items[it].changeText(text, setInitialText = true)
         }
     }
 
-    private fun setupButtonTextList(context: Context) {
-        buttonTextList.add(context.getString(R.string.button_start))
-        buttonTextList.add(context.getString(R.string.button_stop))
+    private fun setupButtonTextList() {
+        buttonTextList.add(fragment.getString(R.string.button_start))
+        buttonTextList.add(fragment.getString(R.string.button_stop))
         buttonText.postValue(buttonTextList.first())
+    }
+
+    override fun onDestroy() {
+        Contract.SavedState.mapsPresenter = this
     }
 
 }

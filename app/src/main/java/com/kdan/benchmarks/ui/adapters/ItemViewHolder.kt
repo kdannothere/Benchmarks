@@ -1,7 +1,7 @@
 package com.kdan.benchmarks.ui.adapters
 
 import androidx.recyclerview.widget.RecyclerView
-import com.kdan.benchmarks.viewmodel.ItemData
+import com.kdan.benchmarks.data.ItemData
 import com.kdan.benchmarks.databinding.ItemViewBinding
 
 class ItemViewHolder(

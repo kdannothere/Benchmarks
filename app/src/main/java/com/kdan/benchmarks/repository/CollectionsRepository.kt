@@ -1,7 +1,7 @@
 package com.kdan.benchmarks.repository
 
-import com.kdan.benchmarks.viewmodel.Callback
-import com.kdan.benchmarks.viewmodel.ItemData
+import com.kdan.benchmarks.data.Callback
+import com.kdan.benchmarks.data.ItemData
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.ArrayList

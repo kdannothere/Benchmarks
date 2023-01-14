@@ -5,103 +5,97 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.kdan.benchmarks.MainActivity
 import com.kdan.benchmarks.databinding.FragmentMapsBinding
 import com.kdan.benchmarks.ui.BaseFragment
 import com.kdan.benchmarks.ui.adapters.RecycleViewAdapter
-import com.kdan.benchmarks.utility.Utility
-import com.kdan.benchmarks.viewmodel.Callback
-import com.kdan.benchmarks.viewmodel.MapsViewModel
+import com.kdan.benchmarks.data.Callback
+import com.kdan.benchmarks.data.Contract
+import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
 
 class MapsFragment : BaseFragment<FragmentMapsBinding>(
     FragmentMapsBinding::inflate
-) {
+), Contract.View {
 
-    val viewModel: MapsViewModel by viewModels(
-        factoryProducer = { factory }
-    )
+    private lateinit var presenter: MapsPresenter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: RecycleViewAdapter
+    lateinit var adapter: RecycleViewAdapter
     private lateinit var handler: Handler
+    private val tabNumber = 1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (viewModel.firstLaunch) viewModel.initialSetup(requireContext())
+        setupPresenter()
+        presenter.setupFragment(this)
+        if (presenter.firstLaunch) presenter.initialSetup()
         adapter = RecycleViewAdapter()
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         recyclerView.adapter = adapter
         handler = Handler(Looper.getMainLooper())
-        adapter.submitList(viewModel.items)
+        adapter.submitList(presenter.items)
 
-        setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
-            val result = bundle.getInt(viewModel.tagCollectionSize)
-            viewModel.collectionSize = result
+        setFragmentResultListener(presenter.tagCollectionSize + tabNumber) { _, bundle ->
+            val result = bundle.getInt(presenter.tagCollectionSize)
+            presenter.collectionSize = result
         }
 
-        viewModel.buttonText.observe(viewLifecycleOwner) {
+        presenter.buttonText.observe(viewLifecycleOwner) {
             binding.buttonStartStop.text = it
         }
 
         binding.buttonStartStop.setOnClickListener {
-            setElementsAmount()
-            viewModel.checkAndStart(requireContext())
+            presenter.setElementsAmount()
+            presenter.checkAndStart()
         }
     }
 
     override fun onResume() {
         super.onResume()
+        CollectionSizeDialogFragment.currentTabNumber = tabNumber
         // call the Callback every second
         handler.postDelayed(Runnable {
-            handler.postDelayed(viewModel.tempThread!!, viewModel.delay)
-            if (Callback.Result.positionsMaps.isEmpty()) return@Runnable
-            viewModel.loadResult()
-            update()
-        }.also { viewModel.tempThread = it }, viewModel.delay)
+            handler.postDelayed(presenter.tempThread!!, presenter.delay)
+            if (Callback.Result.positionsCollections.isEmpty()) return@Runnable
+            presenter.loadResult()
+            presenter.update()
+        }.also {
+            presenter.tempThread = it
+        }, presenter.delay)
     }
 
     override fun onPause() {
         super.onPause()
-        handler.removeCallbacks(viewModel.tempThread!!)
+        handler.removeCallbacks(presenter.tempThread!!)
     }
 
-    private fun update() {
-        viewModel.positions.forEach { adapter.notifyItemChanged(it) }
-        viewModel.positions.clear()
+    override fun onStop() {
+        super.onStop()
+        presenter.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.run {
-            putInt(viewModel.tagCollectionSize, viewModel.collectionSize)
-            putInt(viewModel.tagElementsAmount, viewModel.elementsAmount)
-        }
         super.onSaveInstanceState(outState)
+        outState.run {
+            putInt(presenter.tagCollectionSize, presenter.collectionSize)
+            putInt(presenter.tagElementsAmount, presenter.elementsAmount)
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        val savedCollectionSize = savedInstanceState?.getInt(viewModel.tagCollectionSize).toString()
-        val savedElementsAmount = savedInstanceState?.getInt(viewModel.tagElementsAmount).toString()
-        if (savedCollectionSize != "null") viewModel.collectionSize = savedCollectionSize.toInt()
-        if (savedElementsAmount != "null") viewModel.elementsAmount = savedElementsAmount.toInt()
+        val savedCollectionSize = savedInstanceState?.getInt(presenter.tagCollectionSize).toString()
+        val savedElementsAmount = savedInstanceState?.getInt(presenter.tagElementsAmount).toString()
+        if (savedCollectionSize != "null") presenter.collectionSize = savedCollectionSize.toInt()
+        if (savedElementsAmount != "null") presenter.elementsAmount = savedElementsAmount.toInt()
     }
 
-    private fun setElementsAmount() {
-        val input = binding.textInputElementsAmount.text.toString()
-        when {
-            input.isNotBlank() -> viewModel.elementsAmount = input.toInt()
-            input.isBlank() -> {
-                viewModel.elementsAmount = 0
-                if (viewModel.collectionSize == 0) {  // Feature: call dialog
-                    val activity = requireActivity() as MainActivity
-                    activity.binding.floatingButton.performClick()
-                }
-            }
+    override fun setupPresenter() {
+        presenter = when (Contract.SavedState.collsPresenter) {
+            null -> MapsPresenter()
+            else -> Contract.SavedState.mapsPresenter!!
         }
-        Utility.hideKeyboard(requireContext(), binding.buttonStartStop)
     }
 
 }

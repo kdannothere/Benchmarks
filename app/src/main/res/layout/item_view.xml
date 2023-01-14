@@ -7,7 +7,7 @@
 
         <variable
             name="itemData"
-            type="com.kdan.benchmarks.viewmodel.ItemData" />
+            type="com.kdan.benchmarks.data.ItemData" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,7 +1,7 @@
 package com.kdan.benchmarks.ui.adapters
 
 import androidx.recyclerview.widget.DiffUtil
-import com.kdan.benchmarks.viewmodel.ItemData
+import com.kdan.benchmarks.data.ItemData
 
 object ItemDiffCallback : DiffUtil.ItemCallback<ItemData>() {
     override fun areItemsTheSame(oldItem: ItemData, newItem: ItemData): Boolean {
