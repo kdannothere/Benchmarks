@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kdan.benchmarks.MainActivity
 import com.kdan.benchmarks.databinding.FragmentCollectionsBinding
 import com.kdan.benchmarks.ui.BaseFragment
+import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
 import com.kdan.benchmarks.ui.adapters.RecycleViewAdapter
 import com.kdan.benchmarks.utility.Utility
 import com.kdan.benchmarks.viewmodel.Callback
@@ -26,6 +27,7 @@ class CollectionsFragment : BaseFragment<FragmentCollectionsBinding>(
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecycleViewAdapter
     private lateinit var handler: Handler
+    private val tabNumber = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,7 +39,7 @@ class CollectionsFragment : BaseFragment<FragmentCollectionsBinding>(
         handler = Handler(Looper.getMainLooper())
         adapter.submitList(viewModel.items)
 
-        setFragmentResultListener(viewModel.tagCollectionSize) { _, bundle ->
+        setFragmentResultListener(viewModel.tagCollectionSize + tabNumber) { _, bundle ->
             val result = bundle.getInt(viewModel.tagCollectionSize)
             viewModel.collectionSize = result
         }
@@ -54,6 +56,7 @@ class CollectionsFragment : BaseFragment<FragmentCollectionsBinding>(
 
     override fun onResume() {
         super.onResume()
+        CollectionSizeDialogFragment.currentTabNumber = tabNumber
         // call the Callback every second
         handler.postDelayed(Runnable {
             handler.postDelayed(viewModel.tempThread!!, viewModel.delay)

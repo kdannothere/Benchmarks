@@ -19,6 +19,7 @@ class CollectionSizeDialogFragment : DialogFragment() {
 
     companion object {
         const val tagCollectionSize = "collectionSize"
+        var currentTabNumber = 0
     }
 
     override fun onCreateView(
@@ -41,7 +42,7 @@ class CollectionSizeDialogFragment : DialogFragment() {
             Utility.showToast(requireContext(), getString(R.string.collection_size_wrong))
             return
         }
-        setFragmentResult(tagCollectionSize, bundleOf(tagCollectionSize to input))
+        setFragmentResult(tagCollectionSize + currentTabNumber, bundleOf(tagCollectionSize to input))
         dismiss()
     }
 
