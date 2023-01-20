@@ -4,20 +4,21 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kdan.benchmarks.R
-import com.kdan.benchmarks.repository.CollectionsRepository
+import com.kdan.benchmarks.repository.CollectionsRep
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
 import com.kdan.benchmarks.utility.Utility
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class CollectionsViewModel : ViewModel(), Callback.LoadingResult {
+class CollectionsViewModel(
+    var collectionSize: Int = 0,
+    var elementsAmount: Int = 0
+) : ViewModel(), Callback.LoadingResult {
 
-    private val repository = CollectionsRepository()
+    private val repository = CollectionsRep()
     private val service: ExecutorService = Executors.newSingleThreadExecutor()
     var items = mutableListOf<ItemData>()
-    var collectionSize = 0
     val tagCollectionSize = CollectionSizeDialogFragment.tagCollectionSize
-    var elementsAmount = 0
     val tagElementsAmount = "elementsAmount"
     private val buttonTextList = mutableListOf<String>()
     val buttonText = MutableLiveData<String>()

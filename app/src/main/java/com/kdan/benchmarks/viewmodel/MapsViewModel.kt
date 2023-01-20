@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kdan.benchmarks.R
-import com.kdan.benchmarks.repository.MapsRepository
+import com.kdan.benchmarks.repository.MapsRep
 import com.kdan.benchmarks.ui.CollectionSizeDialogFragment
 import com.kdan.benchmarks.utility.Utility
 import java.util.concurrent.ExecutorService
@@ -12,7 +12,7 @@ import java.util.concurrent.Executors
 
 class MapsViewModel : ViewModel(), Callback.LoadingResult {
 
-    private val repository = MapsRepository()
+    private val repository = MapsRep()
     private val service: ExecutorService = Executors.newSingleThreadExecutor()
     var items = mutableListOf<ItemData>()
     var collectionSize = 0

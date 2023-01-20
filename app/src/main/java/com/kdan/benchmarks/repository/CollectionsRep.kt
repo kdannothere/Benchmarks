@@ -4,15 +4,20 @@ import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.collections.ArrayList
 
-class CollectionsRepository : Callback.SavingResult {
-    var collectionSize: Int = 0
-    var elementsAmount: Int = 0
+class CollectionsRep(
+    var collectionSize: Int = 0,
+    var elementsAmount: Int = 0,
+) : Callback.SavingResult {
+
     lateinit var items: MutableList<ItemData>
     var isRunning = false
     var isStopped = true
-    val positions = mutableSetOf<Int>()
+    private val positions = mutableSetOf<Int>()
+
+    init {
+        mock()
+    }
 
     fun startAll() {
         isRunning = true
@@ -25,27 +30,27 @@ class CollectionsRepository : Callback.SavingResult {
                 return
             }
             when (it) {
-                    0 -> addingBeginningArrayList(it)
-                    1 -> addingMiddleArrayList(it)
-                    2 -> addingEndArrayList(it)
-                    3 -> searchByValueArrayList(it)
-                    4 -> removingBeginningArrayList(it)
-                    5 -> removingMiddleArrayList(it)
-                    6 -> removingEndArrayList(it)
-                    7 -> addingBeginningLinkedList(it)
-                    8 -> addingMiddleLinkedList(it)
-                    9 -> addingEndLinkedList(it)
-                    10 -> searchByValueLinkedList(it)
-                    11 -> removingBeginningLinkedList(it)
-                    12 -> removingMiddleLinkedList(it)
-                    13 -> removingEndLinkedList(it)
-                    14 -> addingBeginningCopyOnWriteArrayList(it)
-                    15 -> addingMiddleCopyOnWriteArrayList(it)
-                    16 -> addingEndCopyOnWriteArrayList(it)
-                    17 -> searchByValueCopyOnWriteArrayList(it)
-                    18 -> removingBeginningCopyOnWriteArrayList(it)
-                    19 -> removingMiddleCopyOnWriteArrayList(it)
-                    20 -> removingEndCopyOnWriteArrayList(it)
+                0 -> addingBeginningArrayList(it)
+                1 -> addingMiddleArrayList(it)
+                2 -> addingEndArrayList(it)
+                3 -> searchByValueArrayList(it)
+                4 -> removingBeginningArrayList(it)
+                5 -> removingMiddleArrayList(it)
+                6 -> removingEndArrayList(it)
+                7 -> addingBeginningLinkedList(it)
+                8 -> addingMiddleLinkedList(it)
+                9 -> addingEndLinkedList(it)
+                10 -> searchByValueLinkedList(it)
+                11 -> removingBeginningLinkedList(it)
+                12 -> removingMiddleLinkedList(it)
+                13 -> removingEndLinkedList(it)
+                14 -> addingBeginningCopyOnWriteArrayList(it)
+                15 -> addingMiddleCopyOnWriteArrayList(it)
+                16 -> addingEndCopyOnWriteArrayList(it)
+                17 -> searchByValueCopyOnWriteArrayList(it)
+                18 -> removingBeginningCopyOnWriteArrayList(it)
+                19 -> removingMiddleCopyOnWriteArrayList(it)
+                20 -> removingEndCopyOnWriteArrayList(it)
             }
         }
         isRunning = false
@@ -76,7 +81,13 @@ class CollectionsRepository : Callback.SavingResult {
         }
     }
 
-    fun createArrayList(): ArrayList<Byte> {
+    private fun mock() {
+        val mockedItems = mutableListOf<ItemData>()
+        repeat(21) { mockedItems += ItemData(id = it, initialText = "initialText") }
+        items = mockedItems
+    }
+
+    fun createArrayList(collectionSize: Int = this.collectionSize): ArrayList<Byte> {
         val arrayList = mutableListOf<Byte>()
         repeat(collectionSize) {
             arrayList += "0".toByte()
@@ -84,7 +95,7 @@ class CollectionsRepository : Callback.SavingResult {
         return arrayList.toCollection(arrayListOf())
     }
 
-    fun createLinkedList(): LinkedList<Byte> {
+    fun createLinkedList(collectionSize: Int = this.collectionSize): LinkedList<Byte> {
         val linkedList = mutableListOf<Byte>()
         repeat(collectionSize) {
             linkedList += "0".toByte()
@@ -92,7 +103,7 @@ class CollectionsRepository : Callback.SavingResult {
         return linkedList.toCollection(LinkedList())
     }
 
-    fun createCopyOnWriteArrayList(): CopyOnWriteArrayList<Byte> {
+    fun createCopyOnWriteArrayList(collectionSize: Int = this.collectionSize): CopyOnWriteArrayList<Byte> {
         val copyOnWriteArrayList = mutableListOf<Byte>()
         repeat(collectionSize) {
             copyOnWriteArrayList += "0".toByte()
@@ -100,7 +111,7 @@ class CollectionsRepository : Callback.SavingResult {
         return copyOnWriteArrayList.toCollection(CopyOnWriteArrayList())
     }
 
-    private fun addingBeginningArrayList(index: Int) {
+    fun addingBeginningArrayList(index: Int) {
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -119,7 +130,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingMiddleArrayList(index: Int) {
+    fun addingMiddleArrayList(index: Int) {
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -138,7 +149,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingEndArrayList(index: Int) {
+    fun addingEndArrayList(index: Int) {
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -157,7 +168,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun searchByValueArrayList(index: Int) {
+    fun searchByValueArrayList(index: Int) {
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -176,7 +187,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingBeginningArrayList(index: Int) {
+    fun removingBeginningArrayList(index: Int) {
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -195,7 +206,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingMiddleArrayList(index: Int) {
+    fun removingMiddleArrayList(index: Int) {
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -214,7 +225,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingEndArrayList(index: Int) {
+    fun removingEndArrayList(index: Int) {
         var array: ArrayList<Byte>? = createArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -233,7 +244,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingBeginningLinkedList(index: Int) {
+    fun addingBeginningLinkedList(index: Int) {
         var array: LinkedList<Byte>? = createLinkedList()
         var time = 0
         repeat(elementsAmount) {
@@ -252,7 +263,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingMiddleLinkedList(index: Int) {
+    fun addingMiddleLinkedList(index: Int) {
         var array: LinkedList<Byte>? = createLinkedList()
         var time = 0
         repeat(elementsAmount) {
@@ -271,7 +282,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingEndLinkedList(index: Int) {
+    fun addingEndLinkedList(index: Int) {
         var array: LinkedList<Byte>? = createLinkedList()
         var time = 0
         repeat(elementsAmount) {
@@ -290,7 +301,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun searchByValueLinkedList(index: Int) {
+    fun searchByValueLinkedList(index: Int) {
         var array: LinkedList<Byte>? = createLinkedList()
         var time = 0
         repeat(elementsAmount) {
@@ -309,7 +320,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingBeginningLinkedList(index: Int) {
+    fun removingBeginningLinkedList(index: Int) {
         var array: LinkedList<Byte>? = createLinkedList()
         var time = 0
         repeat(elementsAmount) {
@@ -328,7 +339,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingMiddleLinkedList(index: Int) {
+    fun removingMiddleLinkedList(index: Int) {
         var array: LinkedList<Byte>? = createLinkedList()
         var time = 0
         repeat(elementsAmount) {
@@ -347,7 +358,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingEndLinkedList(index: Int) {
+    fun removingEndLinkedList(index: Int) {
         var array: LinkedList<Byte>? = createLinkedList()
         var time = 0
         repeat(elementsAmount) {
@@ -366,7 +377,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingBeginningCopyOnWriteArrayList(index: Int) {
+    fun addingBeginningCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Byte>? = createCopyOnWriteArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -385,7 +396,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingMiddleCopyOnWriteArrayList(index: Int) {
+    fun addingMiddleCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Byte>? = createCopyOnWriteArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -404,7 +415,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingEndCopyOnWriteArrayList(index: Int) {
+    fun addingEndCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Byte>? = createCopyOnWriteArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -423,7 +434,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun searchByValueCopyOnWriteArrayList(index: Int) {
+    fun searchByValueCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Byte>? = createCopyOnWriteArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -442,7 +453,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingBeginningCopyOnWriteArrayList(index: Int) {
+    fun removingBeginningCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Byte>? = createCopyOnWriteArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -461,7 +472,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingMiddleCopyOnWriteArrayList(index: Int) {
+    fun removingMiddleCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Byte>? = createCopyOnWriteArrayList()
         var time = 0
         repeat(elementsAmount) {
@@ -480,7 +491,7 @@ class CollectionsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingEndCopyOnWriteArrayList(index: Int) {
+    fun removingEndCopyOnWriteArrayList(index: Int) {
         var array: CopyOnWriteArrayList<Byte>? = createCopyOnWriteArrayList()
         var time = 0
         repeat(elementsAmount) {

@@ -4,13 +4,13 @@ import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
 
-class MapsRepository : Callback.SavingResult {
+class MapsRep : Callback.SavingResult {
     var collectionSize: Int = 0
     var elementsAmount: Int = 0
     var items = mutableListOf<ItemData>()
     var isRunning = false
     var isStopped = true
-    val positions = mutableSetOf<Int>()
+    private val positions = mutableSetOf<Int>()
 
     fun startAll() {
         isRunning = true
@@ -59,7 +59,7 @@ class MapsRepository : Callback.SavingResult {
         }
     }
 
-    fun createTreeMap(): TreeMap<Int, Byte> {
+    fun createTreeMap(collectionSize: Int = this.collectionSize): TreeMap<Int, Byte> {
         val treeMap = TreeMap<Int, Byte>()
         repeat(collectionSize) {
             treeMap[it] = 0
@@ -67,7 +67,7 @@ class MapsRepository : Callback.SavingResult {
         return treeMap
     }
 
-    fun createHashMap(): HashMap<Int, Byte> {
+    fun createHashMap(collectionSize: Int = this.collectionSize): HashMap<Int, Byte> {
         val hashMap = HashMap<Int, Byte>()
         repeat(collectionSize) {
             hashMap[it] = 0
@@ -75,7 +75,7 @@ class MapsRepository : Callback.SavingResult {
         return hashMap
     }
 
-    private fun addingTreeMap(index: Int) {
+    fun addingTreeMap(index: Int) {
         var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
         var newKey = map!!.size + 1
@@ -96,7 +96,7 @@ class MapsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun searchingTreeMap(index: Int) {
+    fun searchingTreeMap(index: Int) {
         var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
         repeat(elementsAmount) {
@@ -115,7 +115,7 @@ class MapsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingTreeMap(index: Int) {
+    fun removingTreeMap(index: Int) {
         var map: TreeMap<Int, Byte>? = createTreeMap()
         var time = 0
         var key = 0
@@ -136,7 +136,7 @@ class MapsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun addingHashMap(index: Int) {
+    fun addingHashMap(index: Int) {
         var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
         var newKey = map!!.size + 1
@@ -157,7 +157,7 @@ class MapsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun searchingHashMap(index: Int) {
+    fun searchingHashMap(index: Int) {
         var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
         repeat(elementsAmount) {
@@ -176,7 +176,7 @@ class MapsRepository : Callback.SavingResult {
         finishing(index, time)
     }
 
-    private fun removingHashMap(index: Int) {
+    fun removingHashMap(index: Int) {
         var map: HashMap<Int, Byte>? = createHashMap()
         var time = 0
         var key = 0
