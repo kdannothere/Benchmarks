@@ -4,9 +4,11 @@ import com.kdan.benchmarks.viewmodel.Callback
 import com.kdan.benchmarks.viewmodel.ItemData
 import java.util.TreeMap
 
-class MapsRep : Callback.SavingResult {
-    var collectionSize: Int = 0
+class MapsRep(
+    var collectionSize: Int = 0,
     var elementsAmount: Int = 0
+) : Callback.SavingResult {
+
     var items = mutableListOf<ItemData>()
     var isRunning = false
     var isStopped = true

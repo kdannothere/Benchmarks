@@ -7,17 +7,13 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class CollectionsRep(
     var collectionSize: Int = 0,
-    var elementsAmount: Int = 0,
+    var elementsAmount: Int = 0
 ) : Callback.SavingResult {
 
-    lateinit var items: MutableList<ItemData>
+    var items = mutableListOf<ItemData>()
     var isRunning = false
     var isStopped = true
     private val positions = mutableSetOf<Int>()
-
-    init {
-        mock()
-    }
 
     fun startAll() {
         isRunning = true
@@ -79,12 +75,6 @@ class CollectionsRep(
         repeat(items.size) {
             changeBar(it, stop)
         }
-    }
-
-    private fun mock() {
-        val mockedItems = mutableListOf<ItemData>()
-        repeat(21) { mockedItems += ItemData(id = it, initialText = "initialText") }
-        items = mockedItems
     }
 
     fun createArrayList(collectionSize: Int = this.collectionSize): ArrayList<Byte> {
